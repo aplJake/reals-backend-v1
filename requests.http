@@ -1,0 +1,13 @@
+GET http://localhost:2308/api/signup
+Accept: application/json
+
+### Send POST request with json body
+POST http://localhost:2308/api/signup
+Content-Type: application/json
+
+{
+  "id": 999,
+  "value": "content"
+}
+
+###
