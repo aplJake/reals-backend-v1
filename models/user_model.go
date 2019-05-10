@@ -32,7 +32,7 @@ func (user User) Create() map[string]interface{} {
 				return resp
 		}
 
-		// Create hashed password with bcrypt
+		// CreateSeller hashed password with bcrypt
 		hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 		user.Password = string(hashedPassword)
 
@@ -55,8 +55,8 @@ func (user User) Create() map[string]interface{} {
 				return utils.Message(false, "Failed to create account, connection error.")
 		}
 
-		// Create JWT Token
-		fmt.Println("Create JWT Token User id", user.ID)
+		// CreateSeller JWT Token
+		fmt.Println("CreateSeller JWT Token User id", user.ID)
 		tk := &Token{
 				UserId:  user.ID,
 				IsAdmin: false,
@@ -111,7 +111,7 @@ func LogIn(email, password string) map[string]interface{} {
 		// Delete password for safe client response
 		user.Password = ""
 
-		// Create new bcrypt token and JWT token
+		// CreateSeller new bcrypt token and JWT token
 		tk := &Token{UserId: user.ID}
 		token := jwt.NewWithClaims(jwt.GetSigningMethod("HS256"), tk)
 		tokenString, _ := token.SignedString([]byte(signedString))

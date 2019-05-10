@@ -20,11 +20,16 @@ func UserProfile() *chi.Mux {
 		router.Get("/", controllers.GetProfile)
 		router.Put("/", controllers.UpdateProfile)
 		router.Post("/", controllers.AddAds)
+		// Add bew property from user profile
+		router.Post("/property/new", controllers.NewPropertyListing)
+		router.Get("/property/new", controllers.GetSeller)
+
 		return router
 }
 
 func PropertyAdding() *chi.Mux {
 		router := chi.NewRouter()
-		router.Post("/property/new", controllers.CreateSellerHandler)
+		router.Use(middleware.UserProfileCtx)
+		router.Post("/property/new", controllers.NewPropertyListing)
 		return router
 }

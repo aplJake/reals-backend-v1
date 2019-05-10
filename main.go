@@ -27,6 +27,8 @@ func InitRouter() *chi.Mux {
 
 				//r.Mount("/", routers.UserAuthentication())
 				r.Mount("/{userId}", routers.UserProfile())
+				// User addding
+				//r.Mount("/{userId}", routers.PropertyAdding())
 		})
 
 		// Public routes

@@ -9,17 +9,17 @@ type Seller struct {
 		TelephoneNumber string `json:"telephone_number"`
 }
 
-func (seller Seller) Create() map[string]interface{} {
-		if resp, ok := seller.Validate(); !ok {
-				return resp
-		}
+func CreateSeller(id uint, phone string) (map[string]interface{}, bool) {
+		//if resp, ok := seller.Validate(); !ok {
+		//		return resp, false
+		//}
 
 		_, err := GetDb().Exec("INSERT INTO seller(user_id, telephone_number) VALUE (?,?)",
-				seller.ID, seller.TelephoneNumber)
+				id, phone)
 		if err != nil {
-				return utils.Message(false, "Couldn`t insert a new seller")
+				return utils.Message(false, "Couldn`t insert a new seller"), false
 		}
-		return utils.Message(true, "A new seller was created")
+		return utils.Message(true, "A new seller was created"), true
 }
 
 func (seller Seller) Validate() (map[string]interface{}, bool) {
@@ -28,4 +28,14 @@ func (seller Seller) Validate() (map[string]interface{}, bool) {
 		}
 
 		return utils.Message(true, "Requirements passed"), true
+}
+
+func GetSeller(u uint) *Seller {
+		seller := &Seller{}
+		row := GetDb().QueryRow("SELECT * FROM seller WHERE user_id=?", u)
+		err := row.Scan(&seller.ID, &seller.TelephoneNumber)
+		if err != nil {
+				return nil
+		}
+		return seller
 }

@@ -23,7 +23,7 @@ var UserSignUp = func(w http.ResponseWriter, r *http.Request) {
 				utils.Respond(w, utils.Message(false, "Invalid request"))
 				return
 		}
-		// Create new User and UserProfile
+		// CreateSeller new User and UserProfile
 		resp := user.Create()
 		fmt.Println("Response", resp)
 		utils.Respond(w, resp)
