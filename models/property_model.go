@@ -174,7 +174,8 @@ type PropertyListingRequest struct {
 		ListingPrice       string    `json:"listing_price"`
 		ListingCurrency    string `json:"listing_currency"`
 		ListingIsActive    *bool   `json:"listing_is_active"`
-		// small
+		// Address
+		AddressesRequest *AddressesRequest `json:"addresses"`
 }
 
 //func (listing) Validate() {

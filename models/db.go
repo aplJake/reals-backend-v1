@@ -30,8 +30,7 @@ func init() {
 
 		db = conn
 		// TODO: CREATE DATABASE MIGRATION SYSTEM OR TRY TO DO THIS BY USING DOCKER
-
-		//defer db.Close()
+		//return db
 
 }
 

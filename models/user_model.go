@@ -6,6 +6,7 @@ import (
 		"github.com/aplJake/reals-course/server/utils"
 		"github.com/dgrijalva/jwt-go"
 		"golang.org/x/crypto/bcrypt"
+		"log"
 		"strings"
 )
 
@@ -88,7 +89,11 @@ func (user User) Create() map[string]interface{} {
 
 		return response
 }
-
+/*
+At login operation we check the login user data with USER TABLE
+and then check it in ADMINS TABLE if such user exists in both tables
+then lets check its payload to IS_ADMIN: TRUE
+*/
 func LogIn(email, password string) map[string]interface{} {
 		// create the ref to User and search in db the user with some email
 		user := &User{}
@@ -111,8 +116,10 @@ func LogIn(email, password string) map[string]interface{} {
 		// Delete password for safe client response
 		user.Password = ""
 
+		_, status := GetAdmin(user.ID)
+
 		// CreateSeller new bcrypt token and JWT token
-		tk := &Token{UserId: user.ID}
+		tk := &Token{UserId: user.ID, IsAdmin: status}
 		token := jwt.NewWithClaims(jwt.GetSigningMethod("HS256"), tk)
 		tokenString, _ := token.SignedString([]byte(signedString))
 		user.Token = tokenString
@@ -174,4 +181,71 @@ func GetUser(u uint) *User {
 
 		user.Password = ""
 		return user
+}
+
+type Admin struct {
+		UserId    uint   `json:"user_id"`
+		AdminRole string `json:"admin_role"`
+}
+
+// Creates the initial super admin user in both tables
+// Users and admin by transaction
+func InitAdmin() map[string]interface{} {
+		// Validate if there already exists SUPER_USER
+		if resp, ok := ValidateSuperUser(); !ok {
+				return resp
+		}
+
+		tx, err := GetDb().Begin()
+		if err != nil {
+				log.Fatal(err)
+		}
+
+		// Add admin to User Table
+		hashedPassword, _ := bcrypt.GenerateFromPassword([]byte("adminpassword"), bcrypt.DefaultCost)
+		adminPassword := string(hashedPassword)
+		res, err := tx.Exec("INSERT INTO users(user_name, user_email, user_password) VALUES (?,?, ?)",
+				"admin", "admin@gmail.com", adminPassword)
+
+		if err != nil {
+				err := tx.Rollback()
+				log.Fatal(err)
+				return utils.Message(false, "Admin superuser cannot be added to users table")
+		}
+
+		// Add admin to Admins Table
+		id, _ := res.LastInsertId()
+		_, err = tx.Exec("INSERT INTO admins(user_id, admin_role) VALUES (?,?)",
+				id, "SUPER_USER")
+
+		if err != nil {
+				err := tx.Rollback()
+				log.Fatal(err)
+				return utils.Message(false, "Admin superuser cannot be added to admins table")
+		}
+
+		if err := tx.Commit(); err != nil {
+				return utils.Message(false, "Commit error for admin user")
+		}
+
+		return utils.Message(true, "Admin super user was successfully created")
+}
+
+func ValidateSuperUser() (map[string]interface{}, bool) {
+		_, err := GetDb().Exec("SELECT user_id FROM admins WHERE admin_role=?", "SUPER_USER")
+		if err != nil {
+				resp := utils.Message(false, "Validation error while searching the superuser")
+				return resp, false
+		}
+		resp := utils.Message(true, "Successful validation")
+		return resp, true
+}
+func GetAdmin(u uint) (*Admin, bool) {
+		admin := &Admin{}
+		row := GetDb().QueryRow("SELECT * FROM admins WHERE user_id=?", u)
+		err := row.Scan(&admin.UserId, &admin.AdminRole)
+		if err != nil {
+				return nil, false
+		}
+		return admin, true
 }

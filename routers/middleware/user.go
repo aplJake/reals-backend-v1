@@ -40,3 +40,41 @@ func UserProfileCtx(next http.Handler) http.Handler {
 				next.ServeHTTP(w, r.WithContext(ctx))
 		})
 }
+
+// Admin middleware used to verify the userId in
+// admins database table
+func AdminOnly(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				var admin *models.Admin
+				//isAdmin, ok := r.Context().Value("")
+				q := chi.URLParam(r, "userId")
+				if q != "" {
+						userId, err := strconv.Atoi(q)
+						if err != nil {
+								response := utils.Message(false, "Invalid Url id param for admin user.")
+								w.WriteHeader(http.StatusForbidden)
+								w.Header().Add("Content-Type", "application/json")
+								utils.Respond(w, response)
+								return
+						}
+						// Search the Admin user in the database
+						admin, _ := models.GetAdmin(uint(userId))
+						if admin == nil {
+								response := utils.Message(false, "Such admin user doesn`t exists.")
+								w.WriteHeader(http.StatusForbidden)
+								w.Header().Add("Content-Type", "application/json")
+								utils.Respond(w, response)
+								return
+						}
+				} else {
+						response := utils.Message(false, "Unknown Error.")
+						w.WriteHeader(http.StatusForbidden)
+						w.Header().Add("Content-Type", "application/json")
+						utils.Respond(w, response)
+						return
+				}
+
+				ctx := context.WithValue(r.Context(), "admin", admin)
+				next.ServeHTTP(w, r.WithContext(ctx))
+		})
+}

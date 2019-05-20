@@ -14,6 +14,14 @@ func UserAuthentication() *chi.Mux {
 		return router
 }
 
+func Users() *chi.Mux {
+		router := chi.NewRouter()
+		router.Get("/users", controllers.GetUsers)
+		return router
+}
+
+
+
 func UserProfile() *chi.Mux {
 		router := chi.NewRouter()
 		router.Use(middleware.UserProfileCtx)
@@ -27,9 +35,27 @@ func UserProfile() *chi.Mux {
 		return router
 }
 
-func PropertyAdding() *chi.Mux {
+//func PropertyAdding() *chi.Mux {
+//		router := chi.NewRouter()
+//		router.Use(middleware.UserProfileCtx)
+//		router.Post("/property/new", controllers.NewPropertyListing)
+//		return router
+//}
+
+func CountriesAnonymousHandler() *chi.Mux {
 		router := chi.NewRouter()
-		router.Use(middleware.UserProfileCtx)
-		router.Post("/property/new", controllers.NewPropertyListing)
+		router.Get("/countries", controllers.GetCountries)
 		return router
 }
+
+func AdminPageHandler() *chi.Mux {
+		router := chi.NewRouter()
+		router.Use(middleware.AdminOnly)
+		router.Get("/users", controllers.GetUsers)
+		router.Post("/users", controllers.CreateNewAdminUser)
+		return router
+}
+
+
+
+

@@ -3,6 +3,7 @@ package main
 import (
 		"fmt"
 		"github.com/aplJake/reals-course/server/controllers"
+		"github.com/aplJake/reals-course/server/models"
 		"github.com/aplJake/reals-course/server/routers"
 		"github.com/aplJake/reals-course/server/routers/middleware"
 		"github.com/go-chi/chi"
@@ -21,12 +22,17 @@ func InitRouter() *chi.Mux {
 		)
 
 		router.Route("/api", func(r chi.Router) {
+				//r.Post("/admin", controllers.)
 				r.Post("/signup", controllers.UserSignUp)
 				r.Get("/signup", controllers.GetUser)
 				r.Post("/signin", controllers.UserSignIn)
 
 				//r.Mount("/", routers.UserAuthentication())
 				r.Mount("/{userId}", routers.UserProfile())
+				// AdminPage route
+				r.Mount("/admin/{userId}", routers.AdminPageHandler())
+				// ADmin page GetAllUsers
+				//r.Mount("/admin", routers.Users())
 				// User addding
 				//r.Mount("/{userId}", routers.PropertyAdding())
 		})
@@ -43,5 +49,6 @@ func InitRouter() *chi.Mux {
 func main() {
 		fmt.Println("Server Running...")
 		router := InitRouter()
+		models.InitAdmin()
 		log.Fatal(http.ListenAndServe(":2308", router))
 }
