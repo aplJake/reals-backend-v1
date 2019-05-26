@@ -7,7 +7,9 @@ import (
 		"github.com/dgrijalva/jwt-go"
 		"golang.org/x/crypto/bcrypt"
 		"log"
+		"net/http"
 		"strings"
+		"time"
 )
 
 type User struct {
@@ -27,20 +29,32 @@ type Token struct {
 		jwt.StandardClaims
 }
 
+var insertUserQ = `
+		INSERT INTO users(
+		user_name,
+		user_email, 
+		user_password)
+		VALUES (?,?,?);
+		`
+
 // Creation of User and UserProfile
-func (user User) Create() map[string]interface{} {
+func (user User) Create(w http.ResponseWriter) map[string]interface{} {
 		if resp, ok := user.Validate(); !ok {
 				return resp
 		}
 
 		// CreateSeller hashed password with bcrypt
-		hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+		if err != nil {
+				panic(err.Error())
+		}
 		user.Password = string(hashedPassword)
 
 		// Query to add new user to the database
-		res, err := GetDb().Exec("INSERT INTO users(user_name, user_email, user_password) VALUE(?,?,?)",
-				user.UserName, user.Email, user.Password)
-
+		res, err := GetDb().Exec(insertUserQ, user.UserName, user.Email, user.Password)
+		if err != nil {
+				panic(err.Error())
+		}
 		temp, err := res.LastInsertId()
 		if err != nil {
 				panic(err.Error())
@@ -48,23 +62,26 @@ func (user User) Create() map[string]interface{} {
 		}
 		user.ID = uint(temp)
 
-		if err != nil {
-				panic(err.Error())
-		}
-
-		if user.ID < 0 {
-				return utils.Message(false, "Failed to create account, connection error.")
-		}
-
-		// CreateSeller JWT Token
-		fmt.Println("CreateSeller JWT Token User id", user.ID)
-		tk := &Token{
-				UserId:  user.ID,
+		// Create JWT Token
+		experationTime := time.Now().Add(30 * time.Minute)
+		token := CredentialsToken{
+				UserId: user.ID,
 				IsAdmin: false,
+				StandardClaims: jwt.StandardClaims{
+						ExpiresAt: experationTime.Unix(),
+				},
 		}
-		token := jwt.NewWithClaims(jwt.GetSigningMethod("HS256"), tk)
-		tokenString, _ := token.SignedString([]byte(signedString))
-		user.Token = tokenString
+		jwtToken := token.CreateJWTToken(w, experationTime)
+
+		//// CreateSeller JWT Token
+		//fmt.Println("CreateSeller JWT Token User id", user.ID)
+		//tk := &Token{
+		//		UserId:  user.ID,
+		//		IsAdmin: false,
+		//}
+		//token := jwt.NewWithClaims(jwt.GetSigningMethod("HS256"), tk)
+		//tokenString, _ := token.SignedString([]byte(signedString))
+		user.Token = jwtToken
 
 		// Link the Profile to the User
 		err = user.InitProfile()
@@ -104,6 +121,7 @@ func LogIn(email, password string) map[string]interface{} {
 				if err == sql.ErrNoRows {
 						return utils.Message(false, "Email address not found")
 				}
+				log.Println(err.Error())
 				return utils.Message(false, "Connection error. Please retry")
 		}
 
@@ -126,13 +144,6 @@ func LogIn(email, password string) map[string]interface{} {
 
 		response := utils.Message(true, "Logged In")
 		response["account"] = user
-
-		fmt.Println("*********************************")
-		fmt.Printf("SIGN IN is ID=%s \n name=%s \n email=%s \n password=%s \n hashed=%s", user.ID, user.UserName, user.Email, user.Password, user.Token)
-		fmt.Println("User ", user)
-		fmt.Println(response)
-		fmt.Println("*********************************\n")
-
 		return response
 }
 
@@ -157,6 +168,7 @@ func (user *User) Validate() (map[string]interface{}, bool) {
 		// HAS ERROR 		(no such row) that the data is unique and evth is ok
 		// HAS NOT ERROR	the data is not unique and it is selected from the db
 		if err != sql.ErrNoRows {
+				panic(err.Error())
 				return utils.Message(false, "Connection error. Please retry!"), false
 
 				if temp.Email != "" {
@@ -170,7 +182,7 @@ func (user *User) Validate() (map[string]interface{}, bool) {
 
 func GetUser(u uint) *User {
 		user := &User{}
-		row := GetDb().QueryRow("SELECT * FROM users WHERE user_id=?", u)
+		row := GetDb().QueryRow("SELECT * FROM listings WHERE user_id=?", u)
 		err := row.Scan(&user.ID, &user.Email, &user.Password)
 		if err != nil {
 				return nil
@@ -204,13 +216,13 @@ func InitAdmin() map[string]interface{} {
 		// Add admin to User Table
 		hashedPassword, _ := bcrypt.GenerateFromPassword([]byte("adminpassword"), bcrypt.DefaultCost)
 		adminPassword := string(hashedPassword)
-		res, err := tx.Exec("INSERT INTO users(user_name, user_email, user_password) VALUES (?,?, ?)",
+		res, err := tx.Exec("INSERT INTO listings(user_name, user_email, user_password) VALUES (?,?, ?)",
 				"admin", "admin@gmail.com", adminPassword)
 
 		if err != nil {
 				err := tx.Rollback()
 				log.Fatal(err)
-				return utils.Message(false, "Admin superuser cannot be added to users table")
+				return utils.Message(false, "Admin superuser cannot be added to listings table")
 		}
 
 		// Add admin to Admins Table

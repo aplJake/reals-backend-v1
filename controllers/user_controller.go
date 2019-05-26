@@ -24,7 +24,7 @@ var UserSignUp = func(w http.ResponseWriter, r *http.Request) {
 				return
 		}
 		// CreateSeller new User and UserProfile
-		resp := user.Create()
+		resp := user.Create(w)
 		fmt.Println("Response", resp)
 		utils.Respond(w, resp)
 }
@@ -48,7 +48,7 @@ var UserSignIn = func(w http.ResponseWriter, r *http.Request) {
 func GetUsers(w http.ResponseWriter, r *http.Request) {
 		db := models.GetDb()
 
-		queryRes, err := db.Query("SELECT * FROM users ORDER BY user_id DESC")
+		queryRes, err := db.Query("SELECT * FROM listings ORDER BY user_id DESC")
 		if err != nil {
 				panic(err.Error())
 		}
@@ -66,7 +66,7 @@ func GetUsers(w http.ResponseWriter, r *http.Request) {
 
 		//defer db.Close()
 		resp := utils.Message(true, "Users are recieved successfully")
-		resp["users"] = users
+		resp["listings"] = users
 		utils.Respond(w, resp)
 }
 
@@ -83,7 +83,7 @@ func CreateNewAdminUser(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(user)
 		// CreateSeller new Admin
 		// Check if there exists such user with such id
-		_, err = models.GetDb().Exec("SELECT * FROM users WHERE user_id=?", user.ID)
+		_, err = models.GetDb().Exec("SELECT * FROM listings WHERE user_id=?", user.ID)
 		if err != nil {
 				resp := utils.Message(false, "There doesn`t exist such user with this ID")
 				utils.Respond(w, resp)

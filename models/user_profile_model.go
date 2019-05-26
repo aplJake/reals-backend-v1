@@ -59,7 +59,7 @@ func GetUserProfile(u uint) (*UserProfileRespond, error) {
 		row := GetDb().QueryRow(
 				`	SELECT u.user_id, u.user_name, p.profile_description, p.created_at, p.updated_at
 				FROM user_profile p 
-				JOIN users u ON p.user_id = u.user_id
+				JOIN listings u ON p.user_id = u.user_id
 				WHERE u.user_id = ?;`, u)
 
 		err := row.Scan(&resProfile.UserID, &resProfile.UserName,

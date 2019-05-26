@@ -16,7 +16,7 @@ func UserAuthentication() *chi.Mux {
 
 func Users() *chi.Mux {
 		router := chi.NewRouter()
-		router.Get("/users", controllers.GetUsers)
+		router.Get("/listings", controllers.GetUsers)
 		return router
 }
 
@@ -51,8 +51,8 @@ func CountriesAnonymousHandler() *chi.Mux {
 func AdminPageHandler() *chi.Mux {
 		router := chi.NewRouter()
 		router.Use(middleware.AdminOnly)
-		router.Get("/users", controllers.GetUsers)
-		router.Post("/users", controllers.CreateNewAdminUser)
+		router.Get("/listings", controllers.GetUsers)
+		router.Post("/listings", controllers.CreateNewAdminUser)
 		return router
 }
 
