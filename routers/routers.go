@@ -1,9 +1,12 @@
 package routers
 
 import (
+		"context"
 		"github.com/aplJake/reals-course/server/controllers"
+		"github.com/aplJake/reals-course/server/models"
 		"github.com/aplJake/reals-course/server/routers/middleware"
 		"github.com/go-chi/chi"
+		"net/http"
 )
 
 func UserAuthentication() *chi.Mux {
@@ -44,8 +47,28 @@ func UserProfile() *chi.Mux {
 
 func CountriesAnonymousHandler() *chi.Mux {
 		router := chi.NewRouter()
-		router.Get("/countries", controllers.GetCountries)
+		router.Get("/", controllers.GetCountries)
+		
+		router.Route("/{countryID}", func(r chi.Router) {
+				r.Use(CountryCtx)
+				r.Get("/cities", controllers.GetCitiesByCountry)
+		})
 		return router
+}
+
+func CountryCtx(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				var country models.Country
+
+				if countryID := chi.URLParam(r, "countryID"); countryID != "" {
+						country = models.DBGetCountry(countryID)
+				} else {
+						return
+				}
+
+				ctx := context.WithValue(r.Context(), "coutryID", country)
+				next.ServeHTTP(w, r.WithContext(ctx))
+		})
 }
 
 func AdminPageHandler() *chi.Mux {

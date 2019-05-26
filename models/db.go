@@ -31,7 +31,24 @@ func init() {
 		db = conn
 		// TODO: CREATE DATABASE MIGRATION SYSTEM OR TRY TO DO THIS BY USING DOCKER
 		//return db
+}
 
+func InitDB() *sql.DB {
+		e := godotenv.Load()
+		if e != nil {
+				fmt.Println(e.Error())
+		}
+		username := os.Getenv("db_user")
+		password := os.Getenv("db_pass")
+		dbName := os.Getenv("db_name")
+
+		// Connect to db
+		conn, err := sql.Open("mysql", username+":"+password+"@/"+dbName)
+		if err != nil {
+				fmt.Println(err.Error())
+		}
+
+		return conn
 }
 
 func GetDb() *sql.DB {

@@ -21,19 +21,15 @@ func InitRouter() *chi.Mux {
 		)
 
 		router.Route("/api", func(r chi.Router) {
-				//r.Post("/admin", controllers.)
 				r.Post("/signup", controllers.UserSignUp)
 				r.Get("/signup", controllers.GetUser)
 				r.Post("/signin", controllers.UserSignIn)
 
-				//r.Mount("/", routers.UserAuthentication())
 				r.Mount("/{userId}", routers.UserProfile())
-				// AdminPage route
+				r.Mount("/countries", routers.CountriesAnonymousHandler())
+
+
 				r.Mount("/admin/{userId}", routers.AdminPageHandler())
-				// ADmin page GetAllUsers
-				//r.Mount("/admin", routers.Users())
-				// User addding
-				//r.Mount("/{userId}", routers.PropertyAdding())
 		})
 
 		// Public routes

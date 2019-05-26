@@ -12,8 +12,8 @@ type Property struct {
 		PropertyId          uint   `json:"property_id"`
 		RoomNumber          int    `json:"room_number,string"`
 		ConstructionType    string `json:"construction_type"`
-		KidsAllowed         *bool   `json:"kids_allowed"`
-		PetsAllowed         *bool   `json:"pets_allowed"`
+		KidsAllowed         *bool  `json:"kids_allowed"`
+		PetsAllowed         *bool  `json:"pets_allowed"`
 		Area                int    `json:"area,string"`
 		BathroomNumber      int    `json:"bathroom_number,string"`
 		MaxFloorNumber      int    `json:"max_floor_number,string"`
@@ -26,7 +26,7 @@ type PropertyListing struct {
 		ListingDescription string `json:"listing_description"`
 		ListingPrice       int    `json:"listing_price,string"`
 		ListingCurrency    string `json:"listing_currency"`
-		ListingIsActive    *bool   `json:"listing_is_active"`
+		ListingIsActive    *bool  `json:"listing_is_active"`
 		// Automation
 		CreatedAt time.Time  `json:"created_at"`
 		UpdatedAt *time.Time `json:"updated_at"`
@@ -87,8 +87,8 @@ func CreateListing(listing *PropertyListingRequest) map[string]interface{} {
                      room_number, construction_type, kids_allowed, pets_allowed,
                      area, bathroom_number, max_floor_number, property_floor_number)
                       VALUES(?,?,?,?,?,?,?,?);`, listing.RoomNumber, listing.ConstructionType,
-                      listing.KidsAllowed, listing.PetsAllowed, listing.Area,
-                      listing.BathroomNumber, listing.MaxFloorNumber, listing.PropertyFloorNumber)
+				listing.KidsAllowed, listing.PetsAllowed, listing.Area,
+				listing.BathroomNumber, listing.MaxFloorNumber, listing.PropertyFloorNumber)
 
 		//fmt.Println(err.Error())
 
@@ -110,8 +110,8 @@ func CreateListing(listing *PropertyListingRequest) map[string]interface{} {
 		res, err = tx.Exec(`INSERT INTO property_listing(
                              property_id, user_id, listing_description,
                              listing_price, listing_currency, listing_is_active) VALUES(?,?,?,?,?,?);`,
-                             id, seller.ID, listing.ListingDescription, listing.ListingPrice,
-                             listing.ListingCurrency, listing.ListingIsActive)
+				id, seller.ID, listing.ListingDescription, listing.ListingPrice,
+				listing.ListingCurrency, listing.ListingIsActive)
 		if err != nil {
 				tx.Rollback()
 				log.Fatal(err)
@@ -162,16 +162,16 @@ type PropertyListingRequest struct {
 		PropertyId          uint   `json:"property_id"`
 		UserId              uint   `json:"user_id"`
 		ConstructionType    string `json:"construction_type"`
-		Area                int `json:"area,string"`
+		Area                int    `json:"area,string"`
 		RoomNumber          int    `json:"room_number,string"`
 		BathroomNumber      int    `json:"bathroom_number,string"`
-		MaxFloorNumber      string    `json:"max_floor_number"`
-		PropertyFloorNumber string    `json:"property_floor_number"`
+		MaxFloorNumber      string `json:"max_floor_number"`
+		PropertyFloorNumber string `json:"property_floor_number"`
 		KidsAllowed         *bool   `json:"kids_allowed"`
 		PetsAllowed         *bool   `json:"pets_allowed"`
 		// Listing
 		ListingDescription string `json:"listing_description"`
-		ListingPrice       string    `json:"listing_price"`
+		ListingPrice       string `json:"listing_price"`
 		ListingCurrency    string `json:"listing_currency"`
 		ListingIsActive    *bool   `json:"listing_is_active"`
 		// Address
