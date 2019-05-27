@@ -23,18 +23,15 @@ type Property struct {
 
 // LisitngCurrency field holds by default such vars: usd, hrv, eur
 type PropertyListing struct {
-		PropertyId         uint   `json:"property_id"`
-		ListingDescription string `json:"listing_description"`
-		ListingPrice       int    `json:"listing_price,string"`
-		ListingCurrency    string `json:"listing_currency"`
-		ListingIsActive    *bool  `json:"listing_is_active"`
-		// Automation
-		CreatedAt time.Time  `json:"created_at"`
-		UpdatedAt *time.Time `json:"updated_at"`
-
-		UserID uint `json:"user_id"`
-		User   *User
-		//AddressesID uint `json:"addresses_id"`
+		PropertyId         uint       `json:"property_id"`
+		AddressesID        uint       `json:"addresses_id"`
+		UserID             uint       `json:"user_id"`
+		ListingDescription string     `json:"listing_description"`
+		ListingPrice       int        `json:"listing_price,string"`
+		ListingCurrency    string     `json:"listing_currency"`
+		ListingIsActive    *bool      `json:"listing_is_active"`
+		CreatedAt          time.Time  `json:"created_at"`
+		UpdatedAt          *time.Time `json:"updated_at"`
 		//Addresses *Addresses
 }
 
@@ -68,9 +65,9 @@ func CreateListing(listing *PropertyListingRequest) map[string]interface{} {
 		//fmt.Println("Property listing", listing)
 		//
 		//_, err := db.Exec(`INSERT INTO property(
-        //            room_number, construction_type, kids_allowed, pets_allowed,
-        //            area, bathroom_number, max_floor_number, property_floor_number)
-        //             VALUES(?,?,?,?,?,?,?,?);`, listing.RoomNumber, listing.ConstructionType,
+		//            room_number, construction_type, kids_allowed, pets_allowed,
+		//            area, bathroom_number, max_floor_number, property_floor_number)
+		//             VALUES(?,?,?,?,?,?,?,?);`, listing.RoomNumber, listing.ConstructionType,
 		//		listing.KidsAllowed, listing.PetsAllowed, listing.Area,
 		//		listing.BathroomNumber, listing.MaxFloorNumber, listing.PropertyFloorNumber)
 		//if err != nil {
@@ -134,8 +131,8 @@ func CreateListing(listing *PropertyListingRequest) map[string]interface{} {
 		fmt.Println("Index 23 ", id)
 
 		//var _  = `INSERT INTO property_listing(
-        //                     property_id, user_id, listing_description,
-        //                     listing_price, listing_currency, listing_is_active) VALUES(?,?,?,?,?,?);`
+		//                     property_id, user_id, listing_description,
+		//                     listing_price, listing_currency, listing_is_active) VALUES(?,?,?,?,?,?);`
 		var insertNewListingQ = `
 				INSERT INTO property_listing(
 						property_id, 
@@ -178,7 +175,7 @@ func CreateListing(listing *PropertyListingRequest) map[string]interface{} {
 
 func handleError(err error) map[string]interface{} {
 		if err != nil {
-				log.Fatal(err)
+				panic(err.Error())
 				return utils.Message(false, "Error while addig a new listing")
 		}
 		return nil
@@ -206,13 +203,13 @@ type PropertyListingRequest struct {
 		BathroomNumber      int    `json:"bathroom_number,string"`
 		MaxFloorNumber      string `json:"max_floor_number"`
 		PropertyFloorNumber string `json:"property_floor_number"`
-		KidsAllowed         *bool   `json:"kids_allowed"`
-		PetsAllowed         *bool   `json:"pets_allowed"`
+		KidsAllowed         *bool  `json:"kids_allowed"`
+		PetsAllowed         *bool  `json:"pets_allowed"`
 		// Listing
 		ListingDescription string `json:"listing_description"`
 		ListingPrice       string `json:"listing_price"`
 		ListingCurrency    string `json:"listing_currency"`
-		ListingIsActive    *bool   `json:"listing_is_active"`
+		ListingIsActive    *bool  `json:"listing_is_active"`
 		// Address
 		AddressesRequest *AddressesRequest `json:"addresses"`
 }

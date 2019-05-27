@@ -14,10 +14,12 @@ var GetProfile = func(w http.ResponseWriter, r *http.Request) {
 		// Context has the userId information that we use for
 		// handle data from db by this id
 		fmt.Println("1", r)
-		profile := r.Context().Value("profile").(*models.UserProfileRespond)
+		profile := r.Context().Value("userId").(models.UserProfileRespond)
 		fmt.Println("2", profile)
 
-		respond, err := models.NewUserProfileResponse(profile)
+		listings, err := models.GetLisitingsByProfile(profile.UserID)
+
+		respond, err := models.NewUserProfileResponse(profile, listings)
 		if err != nil {
 				utils.Respond(w, utils.Message(false, "Failed to get the UserProfile response"))
 				return

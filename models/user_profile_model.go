@@ -1,6 +1,7 @@
 package models
 
 import (
+		"database/sql"
 		"fmt"
 		"github.com/aplJake/reals-course/server/utils"
 		"time"
@@ -48,30 +49,77 @@ type UserProfileRespond struct {
 		UserID      uint       `json:"user_id"`
 		UserName           string     `json:"user_name"`
 		ProfileDescription string     `json:"profile_description"`
-		CreatedAt          time.Time  `json:"created_at"`
+		CreatedAt          *time.Time  `json:"created_at"`
 		UpdatedAt          *time.Time `json:"updated_at"`
 }
 
-func GetUserProfile(u uint) (*UserProfileRespond, error) {
-		resProfile := &UserProfileRespond{}
-		//fmt.Println("User id23 ", u)
-		//row := GetDb().QueryRow("SELECT profile_id, profile_description, created_at FROM user_profile WHERE user_id=?", u)
-		row := GetDb().QueryRow(
-				`	SELECT u.user_id, u.user_name, p.profile_description, p.created_at, p.updated_at
+var _ = `
+SELECT u.user_id, u.user_name, p.profile_description, p.created_at, p.updated_at
 				FROM user_profile p 
 				JOIN listings u ON p.user_id = u.user_id
-				WHERE u.user_id = ?;`, u)
+				WHERE u.user_id = ?;
+`
+var getUserProfileQ = `
+		SELECT 
+		u.user_id,
+		u.user_name,
+		p.profile_description,
+		p.created_at, p.updated_at
+		FROM user_profile p 
+			JOIN users u 
+			    ON p.user_id = u.user_id
+		WHERE u.user_id = ?;
+`
+func GetProfileData(u uint) (UserProfileRespond, error) {
+		var db *sql.DB
+		var profileRes UserProfileRespond
 
-		err := row.Scan(&resProfile.UserID, &resProfile.UserName,
-				&resProfile.ProfileDescription, &resProfile.CreatedAt, &resProfile.UpdatedAt)
-		return resProfile, err
+		db = InitDB()
+		row := GetDb().QueryRow(getUserProfileQ, u)
+
+		err := row.Scan(&profileRes.UserID, &profileRes.UserName,
+				&profileRes.ProfileDescription, &profileRes.CreatedAt, &profileRes.UpdatedAt)
+		if err != nil {
+				panic(err.Error())
+		}
+		defer db.Close()
+
+		return profileRes, err
 }
 
+var getListingsByProfileQ = `
+	SELECT * FROM property_listing
+	WHERE user_id=?;
+`
+
+func GetLisitingsByProfile(profileID uint) ([]PropertyListing, error)  {
+		var db *sql.DB
+		var err error
+
+		db = InitDB()
+
+		res, err := db.Query(getListingsByProfileQ, profileID)
+		handleError(err)
+
+		listing := PropertyListing{}
+		listingsArr := []PropertyListing{}
+		for res.Next() {
+				err = res.Scan(&listing.PropertyId, &listing.UserID, &listing.AddressesID, &listing.ListingDescription,
+						&listing.ListingPrice, &listing.ListingCurrency, &listing.ListingIsActive, &listing.CreatedAt, &listing.UpdatedAt)
+				handleError(err)
+				listingsArr = append(listingsArr, listing)
+		}
+
+		defer db.Close()
+
+		return listingsArr, err
+}
 // Response function to the handler
-func NewUserProfileResponse(profile *UserProfileRespond) (map[string]interface{}, error) {
+func NewUserProfileResponse(profile UserProfileRespond, listings []PropertyListing) (map[string]interface{}, error) {
 		// TODO: validate the article in ArticleResponse (check user by userId and so on)
 		response := utils.Message(true, "Profile data was accessed")
 		response["profile"] = profile
+		response["listings"] = listings
 		return response, nil
 }
 

@@ -23,7 +23,7 @@ func init() {
 		dbName := os.Getenv("db_name")
 
 		// Connect to db
-		conn, err := sql.Open("mysql", username+":"+password+"@/"+dbName)
+		conn, err := sql.Open("mysql", username+":"+password+"@/"+dbName+"?parseTime=true")
 		if err != nil {
 				fmt.Println(err.Error())
 		}
@@ -43,7 +43,7 @@ func InitDB() *sql.DB {
 		dbName := os.Getenv("db_name")
 
 		// Connect to db
-		conn, err := sql.Open("mysql", username+":"+password+"@/"+dbName)
+		conn, err := sql.Open("mysql", username+":"+password+"@/"+dbName+"?parseTime=true")
 		if err != nil {
 				fmt.Println(err.Error())
 		}

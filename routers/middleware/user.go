@@ -13,7 +13,7 @@ import (
 // from URL userId param as a request
 func UserProfileCtx(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				var profile *models.UserProfileRespond
+				var profile models.UserProfileRespond
 
 				userIdString := chi.URLParam(r, "userId")
 				if userIdString != "" {
@@ -26,7 +26,7 @@ func UserProfileCtx(next http.Handler) http.Handler {
 								utils.Respond(w, response)
 								return
 						}
-						profile, err = models.GetUserProfile(uint(userId))
+						profile, err = models.GetProfileData(uint(userId))
 
 				} else {
 						response := utils.Message(false, "Unknown Error.")
@@ -36,7 +36,7 @@ func UserProfileCtx(next http.Handler) http.Handler {
 						return
 				}
 
-				ctx := context.WithValue(r.Context(), "profile", profile)
+				ctx := context.WithValue(r.Context(), "userId", profile)
 				next.ServeHTTP(w, r.WithContext(ctx))
 		})
 }
