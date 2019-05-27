@@ -6,7 +6,7 @@ import (
 )
 
 type City struct {
-		CityName  string `json:"city_name"`
+		CityName  string `json:"city_id"`
 }
 
 type Addresses struct {
@@ -17,7 +17,7 @@ type Addresses struct {
 
 func main() {
 		var address Addresses
-		m := []byte(`{"street_name": "Puchkinska", "street_number": "23", "city_struct ": {"city_name": "Kharkiv"} }`)
+		m := []byte(`{"street_name": "Puchkinska", "street_number": "23", "city_struct ": {"city_id": "Kharkiv"} }`)
 		err := json.Unmarshal(m, &address)
 		if err != nil {
 				panic(err.Error())

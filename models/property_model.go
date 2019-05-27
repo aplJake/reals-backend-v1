@@ -1,6 +1,7 @@
 package models
 
 import (
+		"database/sql"
 		"fmt"
 		"github.com/aplJake/reals-course/server/utils"
 		"log"
@@ -39,6 +40,9 @@ type PropertyListing struct {
 
 // Creates new PropertyListing
 func CreateListing(listing *PropertyListingRequest) map[string]interface{} {
+		var db *sql.DB
+
+		db = InitDB()
 		//seller := &Seller{}
 		//seller.ID = listing.UserId
 		fmt.Println("Listing id", listing.UserId)
@@ -53,31 +57,33 @@ func CreateListing(listing *PropertyListingRequest) map[string]interface{} {
 				}
 		}
 
+		// TODO: ADD PROPERTY VALIDATION
 		// Validate if the property listing is the first in the table
 		//if r, ok := ListingValidate(listing.UserID); !ok {
 		//		return r
 		//}
 
 		// CreateSeller new Property and property listing with transaction
-		fmt.Println("Property listing", listing)
 
-		_, err := GetDb().Exec(`INSERT INTO property(
-                    room_number, construction_type, kids_allowed, pets_allowed,
-                    area, bathroom_number, max_floor_number, property_floor_number)
-                     VALUES(?,?,?,?,?,?,?,?);`, listing.RoomNumber, listing.ConstructionType,
-				listing.KidsAllowed, listing.PetsAllowed, listing.Area,
-				listing.BathroomNumber, listing.MaxFloorNumber, listing.PropertyFloorNumber)
-		if err != nil {
-				log.Fatal(err)
-		}
+		//fmt.Println("Property listing", listing)
+		//
+		//_, err := db.Exec(`INSERT INTO property(
+        //            room_number, construction_type, kids_allowed, pets_allowed,
+        //            area, bathroom_number, max_floor_number, property_floor_number)
+        //             VALUES(?,?,?,?,?,?,?,?);`, listing.RoomNumber, listing.ConstructionType,
+		//		listing.KidsAllowed, listing.PetsAllowed, listing.Area,
+		//		listing.BathroomNumber, listing.MaxFloorNumber, listing.PropertyFloorNumber)
+		//if err != nil {
+		//		log.Fatal(err)
+		//}
 
-		tx, err := GetDb().Begin()
-		fmt.Println("Property listing 2")
+		tx, err := db.Begin()
+		fmt.Println("Property listing 1")
 
 		if r := handleError(err); r != nil {
 				return r
 		}
-		fmt.Println("Property listing 3")
+		fmt.Println("Property listing 2")
 		fmt.Println(listing.RoomNumber, listing.ConstructionType,
 				listing.KidsAllowed, listing.PetsAllowed, listing.Area,
 				listing.BathroomNumber, listing.MaxFloorNumber, listing.PropertyFloorNumber)
@@ -98,6 +104,26 @@ func CreateListing(listing *PropertyListingRequest) map[string]interface{} {
 				return utils.Message(false, "Property object wasn created")
 		}
 
+		//TODO: add transaction for adress adding
+		var insertNewStreetQ = `
+		INSERT INTO addresses(
+				city_id,
+		        street_name,
+		        street_number
+		) VALUES (?,?,?);
+		`
+		res2, err := tx.Exec(insertNewStreetQ, listing.AddressesRequest.CityID, listing.AddressesRequest.StreetName,
+				listing.AddressesRequest.StreetNumber)
+		if err != nil {
+				tx.Rollback()
+				log.Fatal(err)
+				return utils.Message(false, "Property object wasn created")
+		}
+
+		countryId, err := res2.LastInsertId()
+		if r := handleError(err); r != nil {
+				return r
+		}
 		fmt.Println("Property listing 5")
 
 		// Fetch the auto increment Property Id
@@ -106,12 +132,24 @@ func CreateListing(listing *PropertyListingRequest) map[string]interface{} {
 				return r
 		}
 		fmt.Println("Index 23 ", id)
+
+		//var _  = `INSERT INTO property_listing(
+        //                     property_id, user_id, listing_description,
+        //                     listing_price, listing_currency, listing_is_active) VALUES(?,?,?,?,?,?);`
+		var insertNewListingQ = `
+				INSERT INTO property_listing(
+						property_id, 
+				        user_id, 
+				        addresses_id, 
+				        listing_description, 
+				        listing_price, 
+				    	listing_currency, 
+						listing_is_active
+				) VALUES (?,?,?,?,?,?,?);
+		`
 		// Insert data to Property Listing
-		res, err = tx.Exec(`INSERT INTO property_listing(
-                             property_id, user_id, listing_description,
-                             listing_price, listing_currency, listing_is_active) VALUES(?,?,?,?,?,?);`,
-				id, seller.ID, listing.ListingDescription, listing.ListingPrice,
-				listing.ListingCurrency, listing.ListingIsActive)
+		res, err = tx.Exec(insertNewListingQ, id, seller.ID, countryId, listing.ListingDescription,
+				listing.ListingPrice, listing.ListingCurrency, listing.ListingIsActive)
 		if err != nil {
 				tx.Rollback()
 				log.Fatal(err)
@@ -123,6 +161,7 @@ func CreateListing(listing *PropertyListingRequest) map[string]interface{} {
 				return r
 		}
 
+		defer db.Close()
 		log.Println("Done added listing")
 
 		return utils.Message(true, "Property listing was successfully added")

@@ -153,6 +153,7 @@ func LogIn(email, password string) map[string]interface{} {
 	Email address must be unique
 */
 func (user *User) Validate() (map[string]interface{}, bool) {
+		var db *sql.DB
 		if !strings.Contains(user.Email, "@") {
 				return utils.Message(false, "Email address is required"), false
 		}
@@ -161,8 +162,12 @@ func (user *User) Validate() (map[string]interface{}, bool) {
 		}
 
 		temp := &User{}
-		row := GetDb().QueryRow("SELECT user_email FROM users WHERE user_email=?", user.Email)
+
+		db = InitDB()
+		row := db.QueryRow("SELECT user_email FROM users WHERE user_email=?", user.Email)
 		err := row.Scan(&temp.Email)
+
+		defer db.Close()
 
 		// Check if database has some errors
 		// HAS ERROR 		(no such row) that the data is unique and evth is ok

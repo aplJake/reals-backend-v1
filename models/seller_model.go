@@ -1,6 +1,8 @@
 package models
 
 import (
+		"database/sql"
+		"fmt"
 		"github.com/aplJake/reals-course/server/utils"
 )
 
@@ -13,9 +15,13 @@ func CreateSeller(id uint, phone string) (map[string]interface{}, bool) {
 		//if resp, ok := seller.Validate(); !ok {
 		//		return resp, false
 		//}
+		var db *sql.DB
+		db = InitDB()
 
-		_, err := GetDb().Exec("INSERT INTO seller(user_id, telephone_number) VALUE (?,?)",
+		fmt.Println(" Seller User id ", id, " phone ", phone)
+		_, err := db.Exec("INSERT INTO seller(user_id, telephone_number) VALUE (?,?)",
 				id, phone)
+		defer db.Close()
 		if err != nil {
 				return utils.Message(false, "Couldn`t insert a new seller"), false
 		}
