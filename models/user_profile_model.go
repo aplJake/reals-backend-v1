@@ -64,7 +64,8 @@ var getUserProfileQ = `
 		u.user_id,
 		u.user_name,
 		p.profile_description,
-		p.created_at, p.updated_at
+		cast(p.created_at as datetime),
+		cast(p.updated_at as datetime)
 		FROM user_profile p 
 			JOIN users u 
 			    ON p.user_id = u.user_id
@@ -75,7 +76,7 @@ func GetProfileData(u uint) (UserProfileRespond, error) {
 		var profileRes UserProfileRespond
 
 		db = InitDB()
-		row := GetDb().QueryRow(getUserProfileQ, u)
+		row := db.QueryRow(getUserProfileQ, u)
 
 		err := row.Scan(&profileRes.UserID, &profileRes.UserName,
 				&profileRes.ProfileDescription, &profileRes.CreatedAt, &profileRes.UpdatedAt)
@@ -88,7 +89,16 @@ func GetProfileData(u uint) (UserProfileRespond, error) {
 }
 
 var getListingsByProfileQ = `
-	SELECT * FROM property_listing
+	SELECT property_id,
+	       user_id,
+	       addresses_id,
+	       listing_description,
+	       listing_price,
+	       listing_currency,
+	       listing_is_active,
+	       cast(created_at as datetime),
+		   cast(updated_at as datetime)
+	FROM property_listing
 	WHERE user_id=?;
 `
 

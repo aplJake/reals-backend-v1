@@ -31,7 +31,7 @@ type PropertyListing struct {
 		ListingCurrency    string     `json:"listing_currency"`
 		ListingIsActive    *bool      `json:"listing_is_active"`
 		CreatedAt          time.Time  `json:"created_at"`
-		UpdatedAt          *time.Time `json:"updated_at"`
+		UpdatedAt          time.Time  `json:"updated_at"`
 		//Addresses *Addresses
 }
 
@@ -86,10 +86,19 @@ func CreateListing(listing *PropertyListingRequest) map[string]interface{} {
 				listing.BathroomNumber, listing.MaxFloorNumber, listing.PropertyFloorNumber)
 
 		// Insert data to the property table
-		res, err := tx.Exec(`INSERT INTO property(
-                     room_number, construction_type, kids_allowed, pets_allowed,
-                     area, bathroom_number, max_floor_number, property_floor_number)
-                      VALUES(?,?,?,?,?,?,?,?);`, listing.RoomNumber, listing.ConstructionType,
+		var insertNewPropertyQ = `
+				INSERT INTO property(
+                room_number,
+				construction_type,
+				kids_allowed,
+				pets_allowed,
+                area,
+				bathroom_number,
+				max_floor_number,
+				property_floor_number
+				) VALUES(?,?,?,?,?,?,?,?);
+		`
+		res, err := tx.Exec(insertNewPropertyQ, listing.RoomNumber, listing.ConstructionType,
 				listing.KidsAllowed, listing.PetsAllowed, listing.Area,
 				listing.BathroomNumber, listing.MaxFloorNumber, listing.PropertyFloorNumber)
 
@@ -97,7 +106,7 @@ func CreateListing(listing *PropertyListingRequest) map[string]interface{} {
 
 		if err != nil {
 				err := tx.Rollback()
-				log.Fatal(err)
+				panic(err.Error())
 				return utils.Message(false, "Property object wasn created")
 		}
 
@@ -113,7 +122,7 @@ func CreateListing(listing *PropertyListingRequest) map[string]interface{} {
 				listing.AddressesRequest.StreetNumber)
 		if err != nil {
 				tx.Rollback()
-				log.Fatal(err)
+				panic(err.Error())
 				return utils.Message(false, "Property object wasn created")
 		}
 
@@ -143,13 +152,16 @@ func CreateListing(listing *PropertyListingRequest) map[string]interface{} {
 				    	listing_currency, 
 						listing_is_active
 				) VALUES (?,?,?,?,?,?,?);
-		`
+		`;
+
+		fmt.Println("Error code", id, seller.ID, countryId, listing.ListingDescription,
+				listing.ListingPrice, listing.ListingCurrency, listing.ListingIsActive)
 		// Insert data to Property Listing
 		res, err = tx.Exec(insertNewListingQ, id, seller.ID, countryId, listing.ListingDescription,
 				listing.ListingPrice, listing.ListingCurrency, listing.ListingIsActive)
 		if err != nil {
 				tx.Rollback()
-				log.Fatal(err)
+				panic(err.Error())
 				return utils.Message(false, "Property object wasn created")
 		}
 
@@ -203,13 +215,13 @@ type PropertyListingRequest struct {
 		BathroomNumber      int    `json:"bathroom_number,string"`
 		MaxFloorNumber      string `json:"max_floor_number"`
 		PropertyFloorNumber string `json:"property_floor_number"`
-		KidsAllowed         *bool  `json:"kids_allowed"`
-		PetsAllowed         *bool  `json:"pets_allowed"`
+		KidsAllowed         bool  `json:"kids_allowed"`
+		PetsAllowed         bool  `json:"pets_allowed"`
 		// Listing
 		ListingDescription string `json:"listing_description"`
 		ListingPrice       string `json:"listing_price"`
 		ListingCurrency    string `json:"listing_currency"`
-		ListingIsActive    *bool  `json:"listing_is_active"`
+		ListingIsActive    bool  `json:"listing_is_active"`
 		// Address
 		AddressesRequest *AddressesRequest `json:"addresses"`
 }

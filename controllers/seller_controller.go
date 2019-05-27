@@ -11,13 +11,14 @@ import (
 // SellerHandler uses for creation of Seller model
 // that uses when the initial PropertyListing is added to the database
 var NewPropertyListing = func(w http.ResponseWriter, r *http.Request) {
+		//var listing models.PropertyListingRequest
 		listing := &models.PropertyListingRequest{}
 
 		fmt.Println("Request 23")
 		fmt.Println(r.Body)
 
 
-		err := json.NewDecoder(r.Body).Decode(listing)
+		err := json.NewDecoder(r.Body).Decode(&listing)
 		fmt.Println(listing.UserId)
 		if err != nil {
 				utils.Respond(w, utils.Message(false, "Failed to get the Seller object"))
