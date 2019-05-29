@@ -44,15 +44,32 @@ func CreateListing(listing *PropertyListingRequest) map[string]interface{} {
 		//seller.ID = listing.UserId
 		fmt.Println("Listing id", listing.UserId)
 		//fmt.Println("Seller id", seller.ID)
-		seller := GetSeller(listing.UserId)
-		// Validate Seller Account
-		fmt.Println("Seller fidede ", seller)
-		if seller == nil {
-				// CreateSeller the SellerAccount
-				if resp, ok := CreateSeller(listing.UserId, ""); !ok {
+
+		exists, err := SellerIsExists(listing.UserId)
+		if err != nil {
+					panic(err.Error())
+		}
+
+		seller := &Seller{}
+		if !exists {
+				resp, seller := CreateSeller(listing.UserId, "")
+				if seller == nil {
 						return resp
 				}
+		} else {
+				seller = GetSeller(listing.UserId)
 		}
+
+		//seller := GetSeller(listing.UserId)
+		// Validate Seller Account
+
+		//fmt.Println("Seller fidede ", seller)
+		//if seller == nil {
+		//		// CreateSeller the SellerAccount
+		//		if resp, ok := CreateSeller(listing.UserId, ""); !ok {
+		//				return resp
+		//		}
+		//}
 
 		// TODO: ADD PROPERTY VALIDATION
 		// Validate if the property listing is the first in the table

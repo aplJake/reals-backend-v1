@@ -11,21 +11,27 @@ type Seller struct {
 		TelephoneNumber string `json:"telephone_number"`
 }
 
-func CreateSeller(id uint, phone string) (map[string]interface{}, bool) {
+func CreateSeller(id uint, phone string) (map[string]interface{}, *Seller) {
 		//if resp, ok := seller.Validate(); !ok {
 		//		return resp, false
 		//}
 		var db *sql.DB
+		seller := &Seller{
+				ID:id,
+				TelephoneNumber:phone,
+		}
+
 		db = InitDB()
 
 		fmt.Println(" Seller User id ", id, " phone ", phone)
 		_, err := db.Exec("INSERT INTO seller(user_id, telephone_number) VALUE (?,?)",
 				id, phone)
+
 		defer db.Close()
 		if err != nil {
-				return utils.Message(false, "Couldn`t insert a new seller"), false
+				return utils.Message(false, "Couldn`t insert a new seller"), nil
 		}
-		return utils.Message(true, "A new seller was created"), true
+		return utils.Message(true, "A new seller was created"), seller
 }
 
 func (seller Seller) Validate() (map[string]interface{}, bool) {
@@ -38,10 +44,30 @@ func (seller Seller) Validate() (map[string]interface{}, bool) {
 
 func GetSeller(u uint) *Seller {
 		seller := &Seller{}
-		row := GetDb().QueryRow("SELECT * FROM seller WHERE user_id=?", u)
+		db := InitDB()
+
+		row := db.QueryRow("SELECT * FROM seller WHERE user_id=?", u)
 		err := row.Scan(&seller.ID, &seller.TelephoneNumber)
+
+		defer db.Close()
 		if err != nil {
 				return nil
 		}
 		return seller
+}
+
+var sellerIsExistsQ = `SELECT EXISTS(SELECT * FROM seller WHERE user_id=?)`
+func SellerIsExists(sellerID uint) (bool, error)  {
+		db := InitDB()
+		var exists bool
+
+		res := db.QueryRow(sellerIsExistsQ, sellerID)
+		err := res.Scan(&exists)
+		fmt.Println("Seller exists ", exists)
+		defer db.Close()
+		if err != nil {
+				return false, err
+		}
+		return exists, nil
+
 }
