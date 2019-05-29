@@ -38,6 +38,14 @@ func UserProfile() *chi.Mux {
 		return router
 }
 
+func ListingsPages() *chi.Mux  {
+		router := chi.NewRouter()
+		router.Get("/all-listings", controllers.GetAllListings)
+		router.Get("/apartments", controllers.GetApartmentListings)
+		router.Get("/homes", controllers.GetHomeListings)
+		return router
+}
+
 //func PropertyAdding() *chi.Mux {
 //		router := chi.NewRouter()
 //		router.Use(middleware.UserProfileCtx)

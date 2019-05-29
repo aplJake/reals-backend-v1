@@ -18,7 +18,7 @@ type UserProfile struct {
 func (user *User) InitProfile() error {
 		db := GetDb()
 		fmt.Println("User id is ", user.ID)
-		_, err := db.Exec("INSERT INTO user_profile(user_id) VALUE(?)", user.ID)
+		_, err := db.Exec("INSERT INTO user_profile(user_id, profile_description) VALUE(?, ?)", user.ID, "")
 		return err
 }
 

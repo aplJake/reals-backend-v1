@@ -227,6 +227,53 @@ func ListingValidate(u uint) (map[string]interface{}, bool) {
 		return r, true
 }
 
+var getAllListings = `
+	SELECT * FROM property_listing;
+`
+func GetAllListings() ([]PropertyListing, error)  {
+		db := InitDB()
+
+		res, err := db.Query(getAllListings)
+		handleError(err)
+
+		var listing PropertyListing
+		var listingsArr []PropertyListing
+		for res.Next() {
+				err = res.Scan(&listing.PropertyId, &listing.UserID, &listing.AddressesID, &listing.ListingDescription,
+						&listing.ListingPrice, &listing.ListingCurrency, &listing.ListingIsActive, &listing.CreatedAt, &listing.UpdatedAt)
+				handleError(err)
+				listingsArr = append(listingsArr, listing)
+		}
+		defer db.Close()
+
+		return listingsArr, nil
+}
+
+var getListingsByTypeQ = `
+	SELECT L.*
+	FROM property_listing L
+		INNER JOIN property P 
+		ON P.property_id = L.property_id
+	WHERE P.construction_type=?;
+`
+func GetListingsByType(propertyType string) ([]PropertyListing, error)  {
+		db := InitDB()
+
+		res, err := db.Query(getListingsByTypeQ, propertyType)
+		handleError(err)
+
+		var listing PropertyListing
+		var listingsArr []PropertyListing
+		for res.Next() {
+				err = res.Scan(&listing.PropertyId, &listing.UserID, &listing.AddressesID, &listing.ListingDescription,
+						&listing.ListingPrice, &listing.ListingCurrency, &listing.ListingIsActive, &listing.CreatedAt, &listing.UpdatedAt)
+				handleError(err)
+				listingsArr = append(listingsArr, listing)
+		}
+		defer db.Close()
+
+		return listingsArr, nil
+}
 //Response serializer
 // Uses for grouping data of Property and PropertyListing
 type PropertyListingRequest struct {
