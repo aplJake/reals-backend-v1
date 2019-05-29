@@ -122,8 +122,10 @@ func CreateListing(listing *PropertyListingRequest) map[string]interface{} {
 		//fmt.Println(err.Error())
 
 		if err != nil {
-				err := tx.Rollback()
 				panic(err.Error())
+				if err := tx.Rollback(); err != nil {
+						panic(err.Error())
+				}
 				return utils.Message(false, "Property object wasn created")
 		}
 
@@ -138,8 +140,10 @@ func CreateListing(listing *PropertyListingRequest) map[string]interface{} {
 		res2, err := tx.Exec(insertNewStreetQ, listing.AddressesRequest.CityID, listing.AddressesRequest.StreetName,
 				listing.AddressesRequest.StreetNumber)
 		if err != nil {
-				tx.Rollback()
 				panic(err.Error())
+				if err := tx.Rollback(); err != nil {
+						panic(err.Error())
+				}
 				return utils.Message(false, "Property object wasn created")
 		}
 
@@ -177,8 +181,10 @@ func CreateListing(listing *PropertyListingRequest) map[string]interface{} {
 		res, err = tx.Exec(insertNewListingQ, id, seller.ID, countryId, listing.ListingDescription,
 				listing.ListingPrice, listing.ListingCurrency, listing.ListingIsActive)
 		if err != nil {
-				tx.Rollback()
 				panic(err.Error())
+				if err := tx.Rollback(); err != nil {
+						panic(err.Error())
+				}
 				return utils.Message(false, "Property object wasn created")
 		}
 
