@@ -48,7 +48,7 @@ func ListingsPages() *chi.Mux  {
 			//r.Use(PropertyCtx)
 			//localhost/api/pages/data/{propertyID}
 			r.With(PropertyCtx).Get("/{propertyID}", controllers.GetPropertyPageData)
-
+			r.With(QueueCtx).Get("/{propertyID}/queue", controllers.GetPropertyQueue)
 		})
 		return router
 }
@@ -74,6 +74,26 @@ func PropertyCtx(next http.Handler) http.Handler {
 				}
 
 				ctx := context.WithValue(r.Context(), "propertyID", propertyData)
+				next.ServeHTTP(w, r.WithContext(ctx))
+		})
+}
+
+func QueueCtx(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				var qDataArr []models.PropertyQueueData
+				var err error
+				if propertyID := chi.URLParam(r, "propertyID"); propertyID != "" {
+						qDataArr, err = models.GetProperyQueue(propertyID)
+						if err != nil {
+								panic(err.Error())
+								return
+						}
+				} else {
+						fmt.Println("No id ctx")
+						return
+				}
+
+				ctx := context.WithValue(r.Context(), "propertyQueue", qDataArr)
 				next.ServeHTTP(w, r.WithContext(ctx))
 		})
 }

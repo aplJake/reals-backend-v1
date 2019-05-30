@@ -12,7 +12,7 @@ import (
 // ConstructionType handles only values: apartment, house
 type Property struct {
 		PropertyId          uint   `json:"property_id"`
-		RoomNumber          string    `json:"room_number,string"`
+		RoomNumber          string `json:"room_number,string"`
 		ConstructionType    string `json:"construction_type"`
 		KidsAllowed         bool   `json:"kids_allowed"`
 		PetsAllowed         bool   `json:"pets_allowed"`
@@ -299,15 +299,6 @@ type PropertyListingRequest struct {
 		AddressesRequest *AddressesRequest `json:"addresses"`
 }
 
-// Consists from UserProfile data and QueueData
-type PropertyQueueData struct {
-		UserID             uint   `json:"user_id"`
-		PropertyID         uint   `json:"property_id"`
-		Username           string `json:"username"`
-		ProfileDescription string `json:"profile_description"`
-		TelephoneNumber    string `json:"telephone_number"`
-}
-
 type PropertyPageData struct {
 		Listing  PropertyListing `json:"property_listing"`
 		Property Property        `json:"property"`
@@ -373,4 +364,47 @@ func GetPropertyPageData(propertyID string) (PropertyPageData, error) {
 
 		defer db.Close()
 		return p, nil
+}
+
+// Consists from UserProfile data and QueueData
+type PropertyQueueData struct {
+		ProfileDescription sql.NullString    `json:"profile_description"`
+		TelephoneNumber    sql.NullString    `json:"telephone_number"`
+		Username           string    `json:"user_name"`
+		UserEmail          string    `json:"user_email"`
+		QueryTime          time.Time `json:"query_time"`
+}
+
+var getPropertyQueueDataQ = `
+		select UP.profile_description,
+			   B.telephone_number,
+			   U.user_name,
+			   U.user_email,
+			   Q.queue_time
+		from property_queue Q
+				inner join buyer B on Q.user_id = B.user_id
+				inner join user_profile UP on B.user_id = UP.user_id
+				inner join users U on UP.user_id = U.user_id
+				inner join property_listing PL on Q.property_id = PL.property_id
+		where Q.property_id = ?;
+`
+
+func GetProperyQueue(propertyID string) ([]PropertyQueueData, error) {
+		db := InitDB()
+
+		res, err := db.Query(getPropertyQueueDataQ, propertyID)
+		handleError(err)
+
+		var qData PropertyQueueData
+		var qDataArr []PropertyQueueData
+
+		defer db.Close()
+		for res.Next() {
+				err = res.Scan(&qData.ProfileDescription, &qData.TelephoneNumber, &qData.Username,
+						&qData.UserEmail, &qData.QueryTime)
+				handleError(err)
+				qDataArr = append(qDataArr, qData)
+		}
+
+		return qDataArr, err
 }
