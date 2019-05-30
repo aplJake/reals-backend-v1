@@ -332,12 +332,21 @@ func (db *DB) Begin() (*Tx, error) {
 }
 
 var getPropertyListingDataQ = `
-		SELECT L.*, P.*, A.*
+		SELECT L.user_id,
+			   L.addresses_id,
+			   L.listing_description,
+			   L.listing_price,
+			   L.listing_currency,
+			   L.listing_is_active,
+			   L.created_at,
+			   L.updated_at,
+			   P.*,
+			   A.city_id, A.street_name, A.street_number
 		FROM property_listing L
-				 INNER JOIN property P
-					ON L.property_id = P.property_id
-				INNER JOIN addresses A
-					ON L.addresses_id = A.addresses_id
+				 inner JOIN property P
+							ON P.property_id = L.property_id
+				 inner JOIN addresses A
+							ON A.addresses_id = L.addresses_id
 		WHERE P.property_id=?;
 `
 
@@ -350,22 +359,17 @@ func (tx *Tx) GetPropertyListing(propertyID string) (*PropertyPageData, error) {
 
 func GetPropertyPageData(propertyID string) (PropertyPageData, error) {
 		p := PropertyPageData{}
-		property := &PropertyListingRequest{}
 		db := InitDB()
 		// We get multiple data from the db
 		// For that purpose we use transaction
 		res := db.QueryRow(getPropertyListingDataQ, propertyID)
-		err := res.Scan(&p.Property.PropertyId, &p.Listing.UserID, &p.Address.AddressesId, &p.Listing.ListingDescription, &p.Listing.ListingPrice,
-				&p.Listing.ListingCurrency, &p.Listing.ListingIsActive, &p.Listing.CreatedAt, &p.Listing.UpdatedAt, &p.Property.PropertyId,
+		err := res.Scan(&p.Listing.UserID, &p.Address.AddressesId, &p.Listing.ListingDescription, &p.Listing.ListingPrice, &p.Listing.ListingCurrency, &p.Listing.ListingIsActive, &p.Listing.CreatedAt, &p.Listing.UpdatedAt, &p.Property.PropertyId,
 				&p.Property.RoomNumber, &p.Property.ConstructionType, &p.Property.KidsAllowed, &p.Property.PetsAllowed, &p.Property.Area,
-				&p.Property.Area, &p.Property.BathroomNumber, &p.Property.MaxFloorNumber, &p.Property.PropertyFloorNumber,
-				&p.Address.CityId, &p.Address.StreetName, &p.Address.StreetNumber)
+				&p.Property.BathroomNumber, &p.Property.MaxFloorNumber, &p.Property.PropertyFloorNumber, &p.Address.CityId, &p.Address.StreetName, &p.Address.StreetNumber)
 
 		if err != nil {
 				panic(err.Error())
 		}
-
-		fmt.Println(property)
 
 		defer db.Close()
 		return p, nil
