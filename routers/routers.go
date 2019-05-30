@@ -24,8 +24,6 @@ func Users() *chi.Mux {
 		return router
 }
 
-
-
 func UserProfile() *chi.Mux {
 		router := chi.NewRouter()
 		router.Use(middleware.UserProfileCtx)
@@ -39,16 +37,16 @@ func UserProfile() *chi.Mux {
 		return router
 }
 
-func ListingsPages() *chi.Mux  {
+func ListingsPages() *chi.Mux {
 		router := chi.NewRouter()
 		router.Get("/all-listings", controllers.GetAllListings)
 		router.Get("/apartments", controllers.GetApartmentListings)
 		router.Get("/homes", controllers.GetHomeListings)
 		router.Route("/data", func(r chi.Router) {
-			//r.Use(PropertyCtx)
-			//localhost/api/pages/data/{propertyID}
-			r.With(PropertyCtx).Get("/{propertyID}", controllers.GetPropertyPageData)
-			r.With(QueueCtx).Get("/{propertyID}/queue", controllers.GetPropertyQueue)
+				//r.Use(PropertyCtx)
+				//localhost/api/pages/data/{propertyID}
+				r.With(PropertyCtx).Get("/{propertyID}", controllers.GetPropertyPageData)
+				r.With(QueueCtx).Get("/{propertyID}/queue", controllers.GetPropertyQueue)
 		})
 		return router
 }
@@ -80,20 +78,21 @@ func PropertyCtx(next http.Handler) http.Handler {
 
 func QueueCtx(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				var qDataArr []models.PropertyQueueData
+				var propCtxData models.PropertyCtxData
 				var err error
 				if propertyID := chi.URLParam(r, "propertyID"); propertyID != "" {
-						qDataArr, err = models.GetProperyQueue(propertyID)
+						propCtxData.Queue, err = models.GetProperyQueue(propertyID)
 						if err != nil {
 								panic(err.Error())
 								return
 						}
+						propCtxData.Profile, err = models.GetPropertyProfileData(propertyID)
 				} else {
 						fmt.Println("No id ctx")
 						return
 				}
 
-				ctx := context.WithValue(r.Context(), "propertyQueue", qDataArr)
+				ctx := context.WithValue(r.Context(), "propertyData", propCtxData)
 				next.ServeHTTP(w, r.WithContext(ctx))
 		})
 }
@@ -108,7 +107,7 @@ func QueueCtx(next http.Handler) http.Handler {
 func CountriesAnonymousHandler() *chi.Mux {
 		router := chi.NewRouter()
 		router.Get("/", controllers.GetCountries)
-		
+
 		router.Route("/{countryID}", func(r chi.Router) {
 				r.Use(CountryCtx)
 				r.Get("/cities", controllers.GetCitiesByCountry)
@@ -138,6 +137,7 @@ func AdminPageHandler() *chi.Mux {
 		router.Post("/listings", controllers.CreateNewAdminUser)
 		return router
 }
+
 //
 //func (s *server) adminOnly(h http.HandlerFunc) http.HandlerFunc {
 //		return func(w http.ResponseWriter, r *http.Request) {
@@ -148,8 +148,3 @@ func AdminPageHandler() *chi.Mux {
 //				h(w, r)
 //		}
 //}
-
-
-
-
-

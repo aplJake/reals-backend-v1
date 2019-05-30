@@ -367,25 +367,29 @@ func GetPropertyPageData(propertyID string) (PropertyPageData, error) {
 }
 
 // Consists from UserProfile data and QueueData
+type PropertyProfileData struct {
+		ProfileDescription sql.NullString `json:"profile_description"`
+		TelephoneNumber    sql.NullString `json:"telephone_number"`
+		Username           string         `json:"user_name"`
+		UserEmail          string         `json:"user_email"`
+}
+
 type PropertyQueueData struct {
-		ProfileDescription sql.NullString    `json:"profile_description"`
-		TelephoneNumber    sql.NullString    `json:"telephone_number"`
-		Username           string    `json:"user_name"`
-		UserEmail          string    `json:"user_email"`
-		QueryTime          time.Time `json:"query_time"`
+		UserName  string    `json:"user_name"`
+		QueueTime time.Time `json:"queue_time"`
+}
+
+type PropertyCtxData struct {
+		Queue   []PropertyQueueData `json:"queue"`
+		Profile PropertyProfileData `json:"profile"`
 }
 
 var getPropertyQueueDataQ = `
-		select UP.profile_description,
-			   B.telephone_number,
-			   U.user_name,
-			   U.user_email,
+		select U.user_name,
 			   Q.queue_time
 		from property_queue Q
-				inner join buyer B on Q.user_id = B.user_id
-				inner join user_profile UP on B.user_id = UP.user_id
-				inner join users U on UP.user_id = U.user_id
-				inner join property_listing PL on Q.property_id = PL.property_id
+				 inner join buyer B on Q.user_id = B.user_id
+				 inner join users U on B.user_id = U.user_id
 		where Q.property_id = ?;
 `
 
@@ -400,11 +404,34 @@ func GetProperyQueue(propertyID string) ([]PropertyQueueData, error) {
 
 		defer db.Close()
 		for res.Next() {
-				err = res.Scan(&qData.ProfileDescription, &qData.TelephoneNumber, &qData.Username,
-						&qData.UserEmail, &qData.QueryTime)
+				err = res.Scan(&qData.UserName, &qData.QueueTime)
 				handleError(err)
 				qDataArr = append(qDataArr, qData)
 		}
-
 		return qDataArr, err
+}
+
+var getPropertyProfileDataQ = `
+		select UP.profile_description,
+			   S.telephone_number,
+			   U.user_name,
+			   U.user_email
+		from property_queue Q
+			inner join seller S on Q.user_id = S.user_id
+			inner join user_profile UP on S.user_id = UP.user_id
+			inner join users U on UP.user_id = U.user_id
+		where Q.property_id = ?;
+`
+
+func GetPropertyProfileData(propertyID string) (PropertyProfileData, error) {
+		var pData PropertyProfileData
+		db := InitDB()
+
+		res := db.QueryRow(getPropertyProfileDataQ, propertyID)
+		err := res.Scan(&pData.ProfileDescription, &pData.TelephoneNumber,
+				&pData.Username, &pData.UserEmail)
+		handleError(err)
+		defer db.Close()
+
+		return pData, err
 }

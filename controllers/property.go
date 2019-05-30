@@ -10,7 +10,7 @@ import (
 func GetAllListings(w http.ResponseWriter, r *http.Request) {
 		var (
 				listings []models.PropertyListing
-			 	err error
+				err      error
 		)
 		// Request all the data from the database
 		listings, err = models.GetAllListings()
@@ -27,7 +27,7 @@ func GetAllListings(w http.ResponseWriter, r *http.Request) {
 func GetApartmentListings(w http.ResponseWriter, r *http.Request) {
 		var (
 				listings []models.PropertyListing
-				err error
+				err      error
 		)
 		// Request all the data from the database
 		listings, err = models.GetListingsByType("apartment")
@@ -44,7 +44,7 @@ func GetApartmentListings(w http.ResponseWriter, r *http.Request) {
 func GetHomeListings(w http.ResponseWriter, r *http.Request) {
 		var (
 				listings []models.PropertyListing
-				err error
+				err      error
 		)
 		// Request all the data from the database
 		listings, err = models.GetListingsByType("house")
@@ -71,11 +71,11 @@ func GetPropertyPageData(w http.ResponseWriter, r *http.Request) {
 		utils.Respond(w, resp)
 }
 
-func GetPropertyQueue(w http.ResponseWriter, r *http.Request)  {
-		var propertyQueue []models.PropertyQueueData
-		propertyQueue = r.Context().Value("propertyQueue").([]models.PropertyQueueData)
+func GetPropertyQueue(w http.ResponseWriter, r *http.Request) {
+		var propertyPageData models.PropertyCtxData
 
+		propertyPageData = r.Context().Value("propertyData").(models.PropertyCtxData)
 		resp := utils.Message(true, "Queues are sended")
-		resp["property_queue"] = propertyQueue
+		resp["property_queue_data"] = propertyPageData
 		utils.Respond(w, resp)
 }
