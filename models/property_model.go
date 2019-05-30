@@ -281,20 +281,20 @@ func GetListingsByType(propertyType string) ([]PropertyListing, error) {
 // Uses for grouping data of Property and PropertyListing
 type PropertyListingRequest struct {
 		PropertyId          uint   `db:"property_id" json:"property_id"`
-		UserId              uint   `db:"user_id" json:"user_id"`
+		UserId              uint   `db:"user_id"json:"user_id"`
 		ConstructionType    string `db:"construction_type" json:"construction_type"`
 		Area                int    `db:"area" json:"area,string"`
 		RoomNumber          int    `db:"room_number" json:"room_number,string"`
 		BathroomNumber      int    `db:"bathroom_number" json:"bathroom_number,string"`
 		MaxFloorNumber      string `db:"max_floor_number" json:"max_floor_number"`
 		PropertyFloorNumber string `db:"property_floor_number" json:"property_floor_number"`
-		KidsAllowed         bool   `db:"kids_allowed" json:"kids_allowed"`
-		PetsAllowed         bool   `db:"pets_allowed" json:"pets_allowed"`
+		KidsAllowed         bool   `db:"kids_allowed" json:"kids_allowed,string"`
+		PetsAllowed         bool   `db:"pets_allowed" json:"pets_allowed,string"`
 		// Listing
 		ListingDescription string `db:"listing_description" json:"listing_description"`
 		ListingPrice       string `db:"listing_price" json:"listing_price"`
 		ListingCurrency    string `db:"listing_currency" json:"listing_currency"`
-		ListingIsActive    bool   `db: listing_is_active" json:"listing_is_active"`
+		ListingIsActive    bool   `db: listing_is_active" json:"listing_is_active,string"`
 		// Address
 		AddressesRequest *AddressesRequest `json:"addresses"`
 }

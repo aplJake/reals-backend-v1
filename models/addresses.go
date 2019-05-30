@@ -91,9 +91,9 @@ type Addresses struct {
 
 // Router JSON REQUEST MODEL
 type AddressesRequest struct {
-		AddressesID uint `json:"addresses_id"`
+		AddressesID uint `json:"addresses_id,string"`
 		CityID		uint	`db:"city_id" json:"city_id,string"`
 		StreetName   string `db:"street_name" json:"street_name"`
 		StreetNumber string `db:"street_number" json:"street_number"`
-		CountryID	uint	`db:"country_id" json:"country_id"`
+		CountryID	uint	`db:"country_id" json:"country_id,string"`
 }

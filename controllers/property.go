@@ -47,7 +47,7 @@ func GetHomeListings(w http.ResponseWriter, r *http.Request) {
 				err error
 		)
 		// Request all the data from the database
-		listings, err = models.GetListingsByType("home")
+		listings, err = models.GetListingsByType("house")
 		if err != nil {
 				panic(err.Error())
 		}
