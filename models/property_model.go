@@ -4,6 +4,7 @@ import (
 		"database/sql"
 		"fmt"
 		"github.com/aplJake/reals-course/server/utils"
+		_ "github.com/go-sql-driver/mysql"
 		"log"
 		"time"
 )
@@ -11,10 +12,10 @@ import (
 // ConstructionType handles only values: apartment, house
 type Property struct {
 		PropertyId          uint   `json:"property_id"`
-		RoomNumber          int    `json:"room_number,string"`
+		RoomNumber          string    `json:"room_number,string"`
 		ConstructionType    string `json:"construction_type"`
-		KidsAllowed         *bool  `json:"kids_allowed"`
-		PetsAllowed         *bool  `json:"pets_allowed"`
+		KidsAllowed         bool   `json:"kids_allowed"`
+		PetsAllowed         bool   `json:"pets_allowed"`
 		Area                int    `json:"area,string"`
 		BathroomNumber      int    `json:"bathroom_number,string"`
 		MaxFloorNumber      int    `json:"max_floor_number,string"`
@@ -23,15 +24,15 @@ type Property struct {
 
 // LisitngCurrency field holds by default such vars: usd, hrv, eur
 type PropertyListing struct {
-		PropertyId         uint       `json:"property_id"`
-		AddressesID        uint       `json:"addresses_id"`
-		UserID             uint       `json:"user_id"`
-		ListingDescription string     `json:"listing_description"`
-		ListingPrice       int        `json:"listing_price,string"`
-		ListingCurrency    string     `json:"listing_currency"`
-		ListingIsActive    *bool      `json:"listing_is_active"`
-		CreatedAt          time.Time  `json:"created_at"`
-		UpdatedAt          time.Time  `json:"updated_at"`
+		PropertyId         uint      `json:"property_id"`
+		AddressesID        uint      `json:"addresses_id"`
+		UserID             uint      `json:"user_id"`
+		ListingDescription string    `json:"listing_description"`
+		ListingPrice       int       `json:"listing_price,string"`
+		ListingCurrency    string    `json:"listing_currency"`
+		ListingIsActive    bool      `json:"listing_is_active"`
+		CreatedAt          time.Time `json:"created_at"`
+		UpdatedAt          time.Time `json:"updated_at"`
 		//Addresses *Addresses
 }
 
@@ -47,7 +48,7 @@ func CreateListing(listing *PropertyListingRequest) map[string]interface{} {
 
 		exists, err := SellerIsExists(listing.UserId)
 		if err != nil {
-					panic(err.Error())
+				panic(err.Error())
 		}
 
 		seller := &Seller{}
@@ -173,8 +174,7 @@ func CreateListing(listing *PropertyListingRequest) map[string]interface{} {
 				    	listing_currency, 
 						listing_is_active
 				) VALUES (?,?,?,?,?,?,?);
-		`;
-
+		`
 		fmt.Println("Error code", id, seller.ID, countryId, listing.ListingDescription,
 				listing.ListingPrice, listing.ListingCurrency, listing.ListingIsActive)
 		// Insert data to Property Listing
@@ -230,7 +230,8 @@ func ListingValidate(u uint) (map[string]interface{}, bool) {
 var getAllListings = `
 	SELECT * FROM property_listing;
 `
-func GetAllListings() ([]PropertyListing, error)  {
+
+func GetAllListings() ([]PropertyListing, error) {
 		db := InitDB()
 
 		res, err := db.Query(getAllListings)
@@ -256,7 +257,8 @@ var getListingsByTypeQ = `
 		ON P.property_id = L.property_id
 	WHERE P.construction_type=?;
 `
-func GetListingsByType(propertyType string) ([]PropertyListing, error)  {
+
+func GetListingsByType(propertyType string) ([]PropertyListing, error) {
 		db := InitDB()
 
 		res, err := db.Query(getListingsByTypeQ, propertyType)
@@ -274,28 +276,97 @@ func GetListingsByType(propertyType string) ([]PropertyListing, error)  {
 
 		return listingsArr, nil
 }
+
 //Response serializer
 // Uses for grouping data of Property and PropertyListing
 type PropertyListingRequest struct {
-		PropertyId          uint   `json:"property_id"`
-		UserId              uint   `json:"user_id"`
-		ConstructionType    string `json:"construction_type"`
-		Area                int    `json:"area,string"`
-		RoomNumber          int    `json:"room_number,string"`
-		BathroomNumber      int    `json:"bathroom_number,string"`
-		MaxFloorNumber      string `json:"max_floor_number"`
-		PropertyFloorNumber string `json:"property_floor_number"`
-		KidsAllowed         bool  `json:"kids_allowed"`
-		PetsAllowed         bool  `json:"pets_allowed"`
+		PropertyId          uint   `db:"property_id" json:"property_id"`
+		UserId              uint   `db:"user_id" json:"user_id"`
+		ConstructionType    string `db:"construction_type" json:"construction_type"`
+		Area                int    `db:"area" json:"area,string"`
+		RoomNumber          int    `db:"room_number" json:"room_number,string"`
+		BathroomNumber      int    `db:"bathroom_number" json:"bathroom_number,string"`
+		MaxFloorNumber      string `db:"max_floor_number" json:"max_floor_number"`
+		PropertyFloorNumber string `db:"property_floor_number" json:"property_floor_number"`
+		KidsAllowed         bool   `db:"kids_allowed" json:"kids_allowed"`
+		PetsAllowed         bool   `db:"pets_allowed" json:"pets_allowed"`
 		// Listing
-		ListingDescription string `json:"listing_description"`
-		ListingPrice       string `json:"listing_price"`
-		ListingCurrency    string `json:"listing_currency"`
-		ListingIsActive    bool  `json:"listing_is_active"`
+		ListingDescription string `db:"listing_description" json:"listing_description"`
+		ListingPrice       string `db:"listing_price" json:"listing_price"`
+		ListingCurrency    string `db:"listing_currency" json:"listing_currency"`
+		ListingIsActive    bool   `db: listing_is_active" json:"listing_is_active"`
 		// Address
 		AddressesRequest *AddressesRequest `json:"addresses"`
 }
 
-//func (listing) Validate() {
-//
-//}
+// Consists from UserProfile data and QueueData
+type PropertyQueueData struct {
+		UserID             uint   `json:"user_id"`
+		PropertyID         uint   `json:"property_id"`
+		Username           string `json:"username"`
+		ProfileDescription string `json:"profile_description"`
+		TelephoneNumber    string `json:"telephone_number"`
+}
+
+type PropertyPageData struct {
+		Listing  PropertyListing `json:"property_listing"`
+		Property Property        `json:"property"`
+		Address  Addresses       `json:"address"`
+}
+
+// Transaction utils
+type DB struct {
+		*sql.DB
+}
+
+type Tx struct {
+		*sql.Tx
+}
+
+func (db *DB) Begin() (*Tx, error) {
+		tx, err := db.DB.Begin()
+		if err != nil {
+				return nil, err
+		}
+		return &Tx{tx}, nil
+}
+
+var getPropertyListingDataQ = `
+		SELECT L.*, P.*, A.*
+		FROM property_listing L
+				 INNER JOIN property P
+					ON L.property_id = P.property_id
+				INNER JOIN addresses A
+					ON L.addresses_id = A.addresses_id
+		WHERE P.property_id=?;
+`
+
+func (tx *Tx) GetPropertyListing(propertyID string) (*PropertyPageData, error) {
+		listing := &PropertyPageData{}
+		res := tx.QueryRow(getPropertyListingDataQ, propertyID)
+		err := res.Scan(&listing)
+		return listing, err
+}
+
+func GetPropertyPageData(propertyID string) (PropertyPageData, error) {
+		p := PropertyPageData{}
+		property := &PropertyListingRequest{}
+		db := InitDB()
+		// We get multiple data from the db
+		// For that purpose we use transaction
+		res := db.QueryRow(getPropertyListingDataQ, propertyID)
+		err := res.Scan(&p.Property.PropertyId, &p.Listing.UserID, &p.Address.AddressesId, &p.Listing.ListingDescription, &p.Listing.ListingPrice,
+				&p.Listing.ListingCurrency, &p.Listing.ListingIsActive, &p.Listing.CreatedAt, &p.Listing.UpdatedAt, &p.Property.PropertyId,
+				&p.Property.RoomNumber, &p.Property.ConstructionType, &p.Property.KidsAllowed, &p.Property.PetsAllowed, &p.Property.Area,
+				&p.Property.Area, &p.Property.BathroomNumber, &p.Property.MaxFloorNumber, &p.Property.PropertyFloorNumber,
+				&p.Address.CityId, &p.Address.StreetName, &p.Address.StreetNumber)
+
+		if err != nil {
+				panic(err.Error())
+		}
+
+		fmt.Println(property)
+
+		defer db.Close()
+		return p, nil
+}

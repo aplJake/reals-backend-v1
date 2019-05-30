@@ -2,6 +2,7 @@ package routers
 
 import (
 		"context"
+		"fmt"
 		"github.com/aplJake/reals-course/server/controllers"
 		"github.com/aplJake/reals-course/server/models"
 		"github.com/aplJake/reals-course/server/routers/middleware"
@@ -43,7 +44,38 @@ func ListingsPages() *chi.Mux  {
 		router.Get("/all-listings", controllers.GetAllListings)
 		router.Get("/apartments", controllers.GetApartmentListings)
 		router.Get("/homes", controllers.GetHomeListings)
+		router.Route("/data", func(r chi.Router) {
+			//r.Use(PropertyCtx)
+			//localhost/api/pages/data/{propertyID}
+			r.With(PropertyCtx).Get("/{propertyID}", controllers.GetPropertyPageData)
+
+		})
 		return router
+}
+
+type contextResponseWriter struct {
+		http.ResponseWriter
+		ctx context.Context
+}
+
+func PropertyCtx(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				var propertyData models.PropertyPageData
+				var err error
+				if propertyID := chi.URLParam(r, "propertyID"); propertyID != "" {
+						propertyData, err = models.GetPropertyPageData(propertyID)
+						if err != nil {
+								panic(err.Error())
+								return
+						}
+				} else {
+						fmt.Println("No id ctx")
+						return
+				}
+
+				ctx := context.WithValue(r.Context(), "propertyID", propertyData)
+				next.ServeHTTP(w, r.WithContext(ctx))
+		})
 }
 
 //func PropertyAdding() *chi.Mux {
@@ -86,6 +118,17 @@ func AdminPageHandler() *chi.Mux {
 		router.Post("/listings", controllers.CreateNewAdminUser)
 		return router
 }
+//
+//func (s *server) adminOnly(h http.HandlerFunc) http.HandlerFunc {
+//		return func(w http.ResponseWriter, r *http.Request) {
+//				if !currentUser(r).IsAdmin {
+//						http.NotFound(w, r)
+//						return
+//				}
+//				h(w, r)
+//		}
+//}
+
 
 
 

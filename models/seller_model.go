@@ -17,8 +17,8 @@ func CreateSeller(id uint, phone string) (map[string]interface{}, *Seller) {
 		//}
 		var db *sql.DB
 		seller := &Seller{
-				ID:id,
-				TelephoneNumber:phone,
+				ID:              id,
+				TelephoneNumber: phone,
 		}
 
 		db = InitDB()
@@ -57,7 +57,8 @@ func GetSeller(u uint) *Seller {
 }
 
 var sellerIsExistsQ = `SELECT EXISTS(SELECT * FROM seller WHERE user_id=?)`
-func SellerIsExists(sellerID uint) (bool, error)  {
+
+func SellerIsExists(sellerID uint) (bool, error) {
 		db := InitDB()
 		var exists bool
 
@@ -70,4 +71,11 @@ func SellerIsExists(sellerID uint) (bool, error)  {
 		}
 		return exists, nil
 
+}
+
+type SellerProfile struct {
+		ID              uint   `json:"user_id"`
+		UserName        string `json:"user_name"`
+		Email           string `json:"email"`
+		TelephoneNumber string `json:"telephone_number"`
 }
