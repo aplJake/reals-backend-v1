@@ -138,8 +138,8 @@ func CreateListing(listing *PropertyListingRequest) map[string]interface{} {
 		        street_number
 		) VALUES (?,?,?);
 		`
-		res2, err := tx.Exec(insertNewStreetQ, listing.AddressesRequest.CityID, listing.AddressesRequest.StreetName,
-				listing.AddressesRequest.StreetNumber)
+		res2, err := tx.Exec(insertNewStreetQ, CityID, StreetName,
+			StreetNumber)
 		if err != nil {
 				panic(err.Error())
 				if err := tx.Rollback(); err != nil {
@@ -175,10 +175,10 @@ func CreateListing(listing *PropertyListingRequest) map[string]interface{} {
 						listing_is_active
 				) VALUES (?,?,?,?,?,?,?);
 		`
-		fmt.Println("Error code", id, seller.ID, countryId, listing.ListingDescription,
+		fmt.Println("Error code", id, ID, countryId, listing.ListingDescription,
 				listing.ListingPrice, listing.ListingCurrency, listing.ListingIsActive)
 		// Insert data to Property Listing
-		res, err = tx.Exec(insertNewListingQ, id, seller.ID, countryId, listing.ListingDescription,
+		res, err = tx.Exec(insertNewListingQ, id, ID, countryId, listing.ListingDescription,
 				listing.ListingPrice, listing.ListingCurrency, listing.ListingIsActive)
 		if err != nil {
 				panic(err.Error())
@@ -354,9 +354,9 @@ func GetPropertyPageData(propertyID string) (PropertyPageData, error) {
 		// We get multiple data from the db
 		// For that purpose we use transaction
 		res := db.QueryRow(getPropertyListingDataQ, propertyID)
-		err := res.Scan(&p.Listing.UserID, &p.Address.AddressesId, &p.Listing.ListingDescription, &p.Listing.ListingPrice, &p.Listing.ListingCurrency, &p.Listing.ListingIsActive, &p.Listing.CreatedAt, &p.Listing.UpdatedAt, &p.Property.PropertyId,
+		err := res.Scan(&p.Listing.UserID, &AddressesId, &p.Listing.ListingDescription, &p.Listing.ListingPrice, &p.Listing.ListingCurrency, &p.Listing.ListingIsActive, &p.Listing.CreatedAt, &p.Listing.UpdatedAt, &p.Property.PropertyId,
 				&p.Property.RoomNumber, &p.Property.ConstructionType, &p.Property.KidsAllowed, &p.Property.PetsAllowed, &p.Property.Area,
-				&p.Property.BathroomNumber, &p.Property.MaxFloorNumber, &p.Property.PropertyFloorNumber, &p.Address.CityId, &p.Address.StreetName, &p.Address.StreetNumber)
+				&p.Property.BathroomNumber, &p.Property.MaxFloorNumber, &p.Property.PropertyFloorNumber, &CityId, &StreetName, &StreetNumber)
 
 		if err != nil {
 				panic(err.Error())

@@ -65,7 +65,7 @@ func (user User) Create(w http.ResponseWriter) map[string]interface{} {
 		// Create JWT Token
 		experationTime := time.Now().Add(30 * time.Minute)
 		token := CredentialsToken{
-				UserId: user.ID,
+				UserId:  user.ID,
 				IsAdmin: false,
 				StandardClaims: jwt.StandardClaims{
 						ExpiresAt: experationTime.Unix(),

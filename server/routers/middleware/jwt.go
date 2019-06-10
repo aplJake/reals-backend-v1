@@ -1,14 +1,13 @@
 package middleware
 
 import (
-		"context"
-		"fmt"
-		"github.com/aplJake/reals-course/server/models"
-		"github.com/aplJake/reals-course/server/utils"
-		"github.com/dgrijalva/jwt-go"
-		"net/http"
-		"os"
-		"strings"
+	"context"
+	"fmt"
+	"github.com/aplJake/reals-course/server/models"
+	"github.com/aplJake/reals-course/server/utils"
+	"net/http"
+	"os"
+	"strings"
 )
 
 var JwtAuthentication = func(next http.Handler) http.Handler {
