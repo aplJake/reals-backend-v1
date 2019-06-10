@@ -1,15 +1,15 @@
 package models
 
 import (
-		"database/sql"
-		"fmt"
-		"github.com/aplJake/reals-course/server/utils"
-		"github.com/dgrijalva/jwt-go"
-		"golang.org/x/crypto/bcrypt"
-		"log"
-		"net/http"
-		"strings"
-		"time"
+	"database/sql"
+	"fmt"
+	"github.com/aplJake/reals-course/server/utils"
+	"github.com/dgrijalva/jwt-go"
+	"golang.org/x/crypto/bcrypt"
+	"log"
+	"net/http"
+	"strings"
+	"time"
 )
 
 type User struct {
@@ -84,12 +84,12 @@ func (user User) Create(w http.ResponseWriter) map[string]interface{} {
 		user.Token = jwtToken
 
 		// Link the Profile to the User
-		err = user.InitProfile()
-		if err != nil {
-				panic(err.Error())
-				return utils.Message(false, "Failed to create user profile.")
-
-		}
+		//err = user.InitProfile()
+		//if err != nil {
+		//		panic(err.Error())
+		//		return utils.Message(false, "Failed to create user profile.")
+		//
+		//}
 
 		// Delete password for safe client response
 		user.Password = ""
@@ -187,7 +187,7 @@ func (user *User) Validate() (map[string]interface{}, bool) {
 
 func GetUser(u uint) *User {
 		user := &User{}
-		row := GetDb().QueryRow("SELECT * FROM listings WHERE user_id=?", u)
+		row := GetDb().QueryRow("SELECT * FROM users WHERE user_id=?", u)
 		err := row.Scan(&user.ID, &user.Email, &user.Password)
 		if err != nil {
 				return nil
@@ -209,24 +209,28 @@ type Admin struct {
 // Users and admin by transaction
 func InitAdmin() map[string]interface{} {
 		// Validate if there already exists SUPER_USER
-		if resp, ok := ValidateSuperUser(); !ok {
-				return resp
+		if ok := AdminExists("SUPER_USER"); ok {
+			fmt.Println(ok)
+			resp := utils.Message(true, "Super user is already created")
+			return resp
 		}
 
 		tx, err := GetDb().Begin()
 		if err != nil {
-				log.Fatal(err)
+				panic(err.Error())
+				//log.Fatal(err)
 		}
 
 		// Add admin to User Table
 		hashedPassword, _ := bcrypt.GenerateFromPassword([]byte("adminpassword"), bcrypt.DefaultCost)
 		adminPassword := string(hashedPassword)
-		res, err := tx.Exec("INSERT INTO listings(user_name, user_email, user_password) VALUES (?,?, ?)",
+		res, err := tx.Exec("INSERT INTO users(user_name, user_email, user_password) VALUES (?,?, ?)",
 				"admin", "admin@gmail.com", adminPassword)
 
 		if err != nil {
 				err := tx.Rollback()
-				log.Fatal(err)
+				panic(err.Error())
+				//log.Fatal(err)
 				return utils.Message(false, "Admin superuser cannot be added to listings table")
 		}
 
@@ -237,6 +241,7 @@ func InitAdmin() map[string]interface{} {
 
 		if err != nil {
 				err := tx.Rollback()
+				panic(err.Error())
 				log.Fatal(err)
 				return utils.Message(false, "Admin superuser cannot be added to admins table")
 		}
@@ -257,6 +262,7 @@ func ValidateSuperUser() (map[string]interface{}, bool) {
 		resp := utils.Message(true, "Successful validation")
 		return resp, true
 }
+
 func GetAdmin(u uint) (*Admin, bool) {
 		admin := &Admin{}
 		row := GetDb().QueryRow("SELECT * FROM admins WHERE user_id=?", u)
@@ -265,4 +271,24 @@ func GetAdmin(u uint) (*Admin, bool) {
 				return nil, false
 		}
 		return admin, true
+}
+
+func AdminExists(adminRole string) bool {
+	db := InitDB()
+	sqlStmt := "SELECT admin_role FROM admins WHERE admin_role=?"
+	err := db.QueryRow(sqlStmt, adminRole).Scan(&adminRole)
+
+	defer db.Close()
+
+	if err != nil {
+		if err != sql.ErrNoRows {
+			// a real error happened! you should change your function return
+			// to "(bool, error)" and return "false, err" here
+			log.Print(err)
+		}
+
+		return false
+	}
+
+	return true
 }

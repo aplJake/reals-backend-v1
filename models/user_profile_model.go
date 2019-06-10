@@ -15,12 +15,13 @@ type UserProfile struct {
 		User               *User
 }
 
-func (user *User) InitProfile() error {
-		db := GetDb()
-		fmt.Println("User id is ", user.ID)
-		_, err := db.Exec("INSERT INTO user_profile(user_id, profile_description) VALUE(?, ?)", user.ID, "")
-		return err
-}
+//func (user *User) InitProfile() error {
+//		db := InitDB()
+//		fmt.Println("User id is ", user.ID)
+//		_, err := db.Exec("INSERT INTO user_profile(user_id, profile_description) VALUE(?, ?)", user.ID, "")
+//
+//		return err
+//}
 
 func (profile *UserProfile) Update(data UserProfile) error {
 		db := GetDb()
@@ -72,10 +73,9 @@ var getUserProfileQ = `
 		WHERE u.user_id = ?;
 `
 func GetProfileData(u uint) (UserProfileRespond, error) {
-		var db *sql.DB
 		var profileRes UserProfileRespond
 
-		db = InitDB()
+		db := InitDB()
 		row := db.QueryRow(getUserProfileQ, u)
 
 		err := row.Scan(&profileRes.UserID, &profileRes.UserName,

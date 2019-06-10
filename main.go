@@ -3,7 +3,8 @@ package main
 import (
 		"fmt"
 		"github.com/aplJake/reals-course/server/controllers"
-		"github.com/aplJake/reals-course/server/routers"
+	"github.com/aplJake/reals-course/server/models"
+	"github.com/aplJake/reals-course/server/routers"
 		"github.com/aplJake/reals-course/server/routers/middleware"
 		"github.com/go-chi/chi"
 		m "github.com/go-chi/chi/middleware"
@@ -43,8 +44,8 @@ func InitRouter() *chi.Mux {
 }
 
 func main() {
-		fmt.Println("Server Running...")
+		fmt.Println("Server on fire...")
 		router := InitRouter()
-		//models.InitAdmin()
+		models.InitAdmin()
 		log.Fatal(http.ListenAndServe(":2308", router))
 }

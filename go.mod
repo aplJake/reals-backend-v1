@@ -9,7 +9,6 @@ require (
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/golang-migrate/migrate v3.5.4+incompatible
 	github.com/joho/godotenv v1.3.0
-	github.com/mitchellh/mapstructure v1.1.2
 	golang.org/x/crypto v0.0.0-20190506204251-e1dfcc566284
 	google.golang.org/appengine v1.5.0 // indirect
 )
