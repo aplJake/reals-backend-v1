@@ -27,9 +27,7 @@ func DBGetCountry(countryID string) Country  {
 }
 
 func GetAllCountries() ([]Country, error) {
-		var db *sql.DB
-
-		db = InitDB()
+		db := InitDB()
 
 		res, err := db.Query(getAllCountriesQ)
 		handleError(err)
@@ -57,11 +55,29 @@ type City struct {
 		CityName  string `json:"city_name"`
 		CountryId uint   `json:"country_id"`
 }
+var getAllCitiesQ = `
+	SELECT * FROM city;
+`
+func GetAllCities() ([]City, error) {
+	db := InitDB()
 
+	res, err := db.Query(getAllCitiesQ)
+	handleError(err)
+
+	city := City{}
+	cityArr := []City{}
+	for res.Next() {
+		err = res.Scan(&city.CityId, &city.CountryId, &city.CityName)
+		handleError(err)
+		cityArr = append(cityArr, city)
+	}
+
+	defer db.Close()
+	return cityArr, nil
+}
 var findCitiesByCountryQ = `
 	SELECT * FROM city WHERE country_id=?;
 `
-
 func (c *Country) FindCitiesByCountry() ([]City, error)  {
 		var db *sql.DB
 

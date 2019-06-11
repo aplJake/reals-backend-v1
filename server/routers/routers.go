@@ -130,6 +130,17 @@ func CountryCtx(next http.Handler) http.Handler {
 		})
 }
 
+func CitiesAnonymousHandler() *chi.Mux {
+	router := chi.NewRouter()
+	router.Get("/", controllers.GetCitiesList)
+
+	//router.Route("/{cityID}", func(r chi.Router) {
+	//	r.Use(CountryCtx)
+	//	r.Get("/cities", controllers.GetCitiesList)
+	//})
+	return router
+}
+
 func AdminPageHandler() *chi.Mux {
 		router := chi.NewRouter()
 		router.Use(middleware.AdminOnly)

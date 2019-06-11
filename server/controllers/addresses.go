@@ -6,6 +6,7 @@ import (
 		"net/http"
 )
 
+// Get all Countries
 func GetCountries(w http.ResponseWriter, r *http.Request) {
 		var countries []models.Country
 		var err error
@@ -22,6 +23,31 @@ func GetCountries(w http.ResponseWriter, r *http.Request) {
 		utils.Respond(w, resp)
 }
 
+// Add Country
+// Edit Country
+// Remove Country
+
+
+
+// CITIES
+
+// Get all Cities
+func GetCitiesList(w http.ResponseWriter, r *http.Request) {
+	var cities []models.City
+	var err error
+
+	// Request all the data from the database
+	cities, err = models.GetAllCities()
+	if err != nil {
+		panic(err.Error())
+	}
+
+	resp := utils.Message(true, "Cities are sended")
+	resp["cities"] = cities
+	// Respond to the client and ...
+	utils.Respond(w, resp)
+}
+// Get City By Country
 func GetCitiesByCountry(w http.ResponseWriter, r *http.Request) {
 		var cities []models.City
 		var err error
@@ -40,3 +66,6 @@ func GetCitiesByCountry(w http.ResponseWriter, r *http.Request) {
 		// Respond to the client and ...
 		utils.Respond(w, resp)
 }
+
+
+
