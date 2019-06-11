@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="SqlDialectMappings">
-    <file url="file://$PROJECT_DIR$/migrations/v1/10_create_addresses_table.up.sql" dialect="MySQL" />
-    <file url="file://$PROJECT_DIR$/migrations/v1/11_create_admins_table.up.sql" dialect="MySQL" />
-    <file url="file://$PROJECT_DIR$/migrations/v1/1_create_users_table.up.sql" dialect="MySQL" />
-    <file url="file://$PROJECT_DIR$/migrations/v1/2_create_user_profile_table.up.sql" dialect="MySQL" />
-    <file url="file://$PROJECT_DIR$/migrations/v1/3_create_listing_table.up.sql" dialect="MySQL" />
-    <file url="file://$PROJECT_DIR$/migrations/v1/4_create_property_table.up.sql" dialect="MySQL" />
-    <file url="file://$PROJECT_DIR$/migrations/v1/5_create_country_table.up.sql" dialect="MySQL" />
-    <file url="file://$PROJECT_DIR$/migrations/v1/6_create_city_table.up.sql" dialect="MySQL" />
-    <file url="file://$PROJECT_DIR$/migrations/v1/7_create_seller_table.up.sql" dialect="MySQL" />
-    <file url="file://$PROJECT_DIR$/migrations/v1/9_create_property_queue_table.up.sql" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/server/migrations/v1/10_create_addresses_table.up.sql" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/server/migrations/v1/11_create_admins_table.up.sql" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/server/migrations/v1/1_create_users_table.up.sql" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/server/migrations/v1/2_create_user_profile_table.up.sql" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/server/migrations/v1/3_create_listing_table.up.sql" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/server/migrations/v1/4_create_property_table.up.sql" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/server/migrations/v1/5_create_country_table.up.sql" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/server/migrations/v1/6_create_city_table.up.sql" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/server/migrations/v1/7_create_seller_table.up.sql" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/server/migrations/v1/9_create_property_queue_table.up.sql" dialect="MySQL" />
     <file url="PROJECT" dialect="MySQL" />
   </component>
 </project>

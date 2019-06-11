@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/aplJake/reals-course/server/models"
 	"github.com/aplJake/reals-course/server/utils"
+	"github.com/dgrijalva/jwt-go"
 	"net/http"
 	"os"
 	"strings"

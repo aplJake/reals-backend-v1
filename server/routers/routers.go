@@ -133,9 +133,25 @@ func CountryCtx(next http.Handler) http.Handler {
 func AdminPageHandler() *chi.Mux {
 		router := chi.NewRouter()
 		router.Use(middleware.AdminOnly)
-		router.Get("/listings", controllers.GetUsers)
-		router.Post("/listings", controllers.CreateNewAdminUser)
+		// Users info
+		router.Get("/users", controllers.GetUsers)
+		router.Post("/users", controllers.CreateNewAdminUser)
+		// Admins info
+		router.Get("/admins", controllers.GetAdmins)
+		router.With(AdminDeleteCtx).Delete("/admins/{adminID}", controllers.DeleteAdminUser)
 		return router
+}
+
+func AdminDeleteCtx(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		adminID := chi.URLParam(r, "adminID");
+		if adminID == "" {
+			return
+		}
+
+		ctx := context.WithValue(r.Context(), "adminToDeleteID", adminID)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
 }
 
 //
