@@ -51,7 +51,7 @@ func GetAllCountries() ([]Country, error) {
 func (country *Country) Create() error  {
 	// Validate Country obj (it must be unique in the database
 	if ok := CountryExists(country.CountryName); ok {
-		log.Fatal("Country name is exists")
+		log.Println("Country name is exists")
 		return errors.New("County with such name is already exists")
 	}
 
@@ -64,6 +64,20 @@ func (country *Country) Create() error  {
 	if err != nil {
 		log.Fatal(err.Error())
 		return errors.New("Cannot insert a new country to the db")
+	}
+	return nil
+}
+
+func (country *Country) Update() error  {
+	db := InitDB()
+
+	_, err := db.Exec("UPDATE country SET country_name=?, zip_code=? WHERE country_id=?",
+		country.CountryName, country.CountryCode, country.CountryId)
+	defer db.Close()
+
+	if err != nil {
+		log.Fatal(err.Error())
+		return errors.New("Cannot update a country in db")
 	}
 	return nil
 }

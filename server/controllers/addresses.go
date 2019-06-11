@@ -51,8 +51,48 @@ func AddNewCountry(w http.ResponseWriter, r *http.Request) {
 	utils.Respond(w, resp)
 }
 // Edit Country
-// Remove Country
+func UpdateCountry(w http.ResponseWriter, r *http.Request)  {
+	country := &models.Country{}
 
+	// Decode the request to server
+	err := json.NewDecoder(r.Body).Decode(&country)
+	if err != nil {
+		log.Println(err.Error())
+		utils.Respond(w, utils.Message(false, "Cannot decode recieved json object"))
+		return
+	}
+
+	fmt.Print(country)
+	// CreateSeller new User and UserProfile
+	err = country.Update()
+	if err != nil {
+		utils.Respond(w, utils.Message(false, "Cannot update country object in the database"))
+		log.Fatal(err.Error())
+		return
+	}
+
+	resp := utils.Message(true, "Country was successfully updated")
+	utils.Respond(w, resp)
+}
+
+// Remove Country
+func DeleteCountry(w http.ResponseWriter, r *http.Request)  {
+	fmt.Println("Dele request")
+	countryID := r.Context().Value("countryToDeleteID").(string)
+
+	fmt.Println(countryID)
+
+	db := models.InitDB()
+
+	_, err := db.Exec("DELETE FROM country where country_id=?;", countryID)
+	if err != nil {
+		panic(err.Error())
+	}
+	defer db.Close()
+
+	resp := utils.Message(true, "Country was successfully removed")
+	utils.Respond(w, resp)
+}
 
 
 // CITIES
