@@ -57,7 +57,7 @@ type UserProfileRespond struct {
 var _ = `
 SELECT u.user_id, u.user_name, p.profile_description, p.created_at, p.updated_at
 				FROM user_profile p 
-				JOIN listings u ON p.user_id = u.user_id
+				JOIN countries u ON p.user_id = u.user_id
 				WHERE u.user_id = ?;
 `
 var getUserProfileQ = `
@@ -129,7 +129,7 @@ func NewUserProfileResponse(profile UserProfileRespond, listings []PropertyListi
 		// TODO: validate the article in ArticleResponse (check user by userId and so on)
 		response := utils.Message(true, "Profile data was accessed")
 		response["profile"] = profile
-		response["listings"] = listings
+		response["countries"] = listings
 		return response, nil
 }
 

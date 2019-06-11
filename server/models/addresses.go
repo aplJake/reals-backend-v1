@@ -1,6 +1,10 @@
 package models
 
-import "database/sql"
+import (
+	"database/sql"
+	"errors"
+	"log"
+)
 
 type Country struct {
 		CountryId   uint   `json:"country_id"`
@@ -42,6 +46,46 @@ func GetAllCountries() ([]Country, error) {
 
 		defer db.Close()
 		return countryArr, nil
+}
+
+func (country *Country) Create() error  {
+	// Validate Country obj (it must be unique in the database
+	if ok := CountryExists(country.CountryName); ok {
+		log.Fatal("Country name is exists")
+		return errors.New("County with such name is already exists")
+	}
+
+	db := InitDB()
+
+	_, err := db.Exec("INSERT into country(country_name, zip_code) VALUES (?,?)",
+		country.CountryName, country.CountryCode)
+	defer db.Close()
+
+	if err != nil {
+		log.Fatal(err.Error())
+		return errors.New("Cannot insert a new country to the db")
+	}
+	return nil
+}
+
+func CountryExists(countryName string) bool {
+	db := InitDB()
+	sqlStmt := "SELECT country_name FROM country WHERE country_name=?"
+	err := db.QueryRow(sqlStmt, countryName).Scan(&countryName)
+
+	defer db.Close()
+
+	if err != nil {
+		if err != sql.ErrNoRows {
+			// a real error happened! you should change your function return
+			// to "(bool, error)" and return "false, err" here
+			log.Print(err)
+		}
+
+		return false
+	}
+
+	return true
 }
 
 func hadleError(err error) {

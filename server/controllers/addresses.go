@@ -1,9 +1,12 @@
 package controllers
 
 import (
-		"github.com/aplJake/reals-course/server/models"
-		"github.com/aplJake/reals-course/server/utils"
-		"net/http"
+	"encoding/json"
+	"fmt"
+	"github.com/aplJake/reals-course/server/models"
+	"github.com/aplJake/reals-course/server/utils"
+	"log"
+	"net/http"
 )
 
 // Get all Countries
@@ -24,6 +27,29 @@ func GetCountries(w http.ResponseWriter, r *http.Request) {
 }
 
 // Add Country
+func AddNewCountry(w http.ResponseWriter, r *http.Request) {
+	country := &models.Country{}
+
+	// Decode the request to server
+	err := json.NewDecoder(r.Body).Decode(&country)
+	if err != nil {
+		log.Println(err.Error())
+		utils.Respond(w, utils.Message(false, "Cannot decode recieved json object"))
+		return
+	}
+
+	fmt.Print(country)
+	// CreateSeller new User and UserProfile
+	err = country.Create()
+	if err != nil {
+		utils.Respond(w, utils.Message(false, "Cannot add new country object to the database"))
+		log.Fatal(err.Error())
+		return
+	}
+
+	resp := utils.Message(true, "New Country was successfully added")
+	utils.Respond(w, resp)
+}
 // Edit Country
 // Remove Country
 

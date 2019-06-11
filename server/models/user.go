@@ -231,7 +231,7 @@ func InitAdmin() map[string]interface{} {
 				err := tx.Rollback()
 				panic(err.Error())
 				//log.Fatal(err)
-				return utils.Message(false, "Admin superuser cannot be added to listings table")
+				return utils.Message(false, "Admin superuser cannot be added to countries table")
 		}
 
 		// Add admin to Admins Table
