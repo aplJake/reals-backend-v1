@@ -40,7 +40,7 @@ var UserSignIn = func(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Respond to the client and ...
-		resp := models.LogIn(user.Email, user.Password)
+		resp := models.LogIn(user.Email, user.Password, w)
 		utils.Respond(w, resp)
 }
 

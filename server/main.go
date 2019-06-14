@@ -30,9 +30,7 @@ func InitRouter() *chi.Mux {
 				r.Mount("/countries", routers.CountriesAnonymousHandler())
 				r.Mount("/cities", routers.CitiesAnonymousHandler())
 
-			r.Mount("/pages", routers.ListingsPages())
-
-
+				r.Mount("/pages", routers.ListingsPages())
 				r.Mount("/admin/{userId}", routers.AdminPageHandler())
 		})
 

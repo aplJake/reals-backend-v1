@@ -9,6 +9,7 @@ import (
 type CredentialsToken struct {
 		UserId  uint
 		IsAdmin bool
+		UserType string
 		jwt.StandardClaims
 }
 

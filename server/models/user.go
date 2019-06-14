@@ -26,6 +26,7 @@ var signedString = "some_string"
 type Token struct {
 		UserId  uint
 		IsAdmin bool
+		UserType string
 		jwt.StandardClaims
 }
 
@@ -67,6 +68,7 @@ func (user User) Create(w http.ResponseWriter) map[string]interface{} {
 		token := CredentialsToken{
 				UserId:  user.ID,
 				IsAdmin: false,
+				UserType: "USER",
 				StandardClaims: jwt.StandardClaims{
 						ExpiresAt: experationTime.Unix(),
 				},
@@ -111,7 +113,7 @@ At login operation we check the login user data with USER TABLE
 and then check it in ADMINS TABLE if such user exists in both tables
 then lets check its payload to IS_ADMIN: TRUE
 */
-func LogIn(email, password string) map[string]interface{} {
+func LogIn(email, password string, w http.ResponseWriter) map[string]interface{} {
 		// create the ref to User and search in db the user with some email
 		user := &User{}
 		row := GetDb().QueryRow("SELECT * FROM users WHERE user_email=?", email)
@@ -134,13 +136,25 @@ func LogIn(email, password string) map[string]interface{} {
 		// Delete password for safe client response
 		user.Password = ""
 
-		_, status := GetAdmin(user.ID)
+		admin, status := GetAdmin(user.ID)
 
 		// CreateSeller new bcrypt token and JWT token
-		tk := &Token{UserId: user.ID, IsAdmin: status}
-		token := jwt.NewWithClaims(jwt.GetSigningMethod("HS256"), tk)
-		tokenString, _ := token.SignedString([]byte(signedString))
-		user.Token = tokenString
+		experationTime := time.Now().Add(30 * time.Minute)
+
+		token := CredentialsToken{
+			UserId: user.ID,
+			IsAdmin: status,
+			UserType: admin.AdminRole,
+			StandardClaims: jwt.StandardClaims{
+				ExpiresAt: experationTime.Unix(),
+			},
+		}
+
+		jwtToken := token.CreateJWTToken(w, experationTime)
+		user.Token = jwtToken
+
+		//token := jwt.NewWithClaims(jwt.GetSigningMethod("HS256"), tk)
+		//tokenString, _ := token.SignedString([]byte(signedString))
 
 		response := utils.Message(true, "Logged In")
 		response["account"] = user
