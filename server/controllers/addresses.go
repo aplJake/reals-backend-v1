@@ -94,7 +94,22 @@ func DeleteCountry(w http.ResponseWriter, r *http.Request)  {
 	utils.Respond(w, resp)
 }
 
+func DeleteCity(w http.ResponseWriter, r *http.Request)  {
+	cityID := r.Context().Value("cityToDeleteID").(string)
 
+	fmt.Println(cityID)
+
+	db := models.InitDB()
+
+	_, err := db.Exec("DELETE FROM city where city_id=?;", cityID)
+	if err != nil {
+		panic(err.Error())
+	}
+	defer db.Close()
+
+	resp := utils.Message(true, "City was successfully removed")
+	utils.Respond(w, resp)
+}
 // CITIES
 
 // Get all Cities
@@ -133,5 +148,53 @@ func GetCitiesByCountry(w http.ResponseWriter, r *http.Request) {
 		utils.Respond(w, resp)
 }
 
+// AddNewCity POST request handler
+func AddNewCity(w http.ResponseWriter, r *http.Request) {
+	city := &models.City{}
 
+	// Decode the request to server
+	err := json.NewDecoder(r.Body).Decode(&city)
+	if err != nil {
+		log.Println(err.Error())
+		utils.Respond(w, utils.Message(false, "Cannot decode recieved json object"))
+		return
+	}
+
+	fmt.Print(city)
+	// CreateSeller new User and UserProfile
+	err = city.Create()
+	if err != nil {
+		utils.Respond(w, utils.Message(false, "Cannot add new city object to the database"))
+		log.Fatal(err.Error())
+		return
+	}
+
+	resp := utils.Message(true, "New City was successfully added")
+	utils.Respond(w, resp)
+}
+
+// UpdateCity PUT handler that updates infor about city object
+func UpdateCity(w http.ResponseWriter, r *http.Request)  {
+	city := &models.City{}
+
+	// Decode the request to server
+	err := json.NewDecoder(r.Body).Decode(&city)
+	if err != nil {
+		log.Println(err.Error())
+		utils.Respond(w, utils.Message(false, "Cannot decode recieved json object"))
+		return
+	}
+
+	fmt.Print(city)
+	// CreateSeller new User and UserProfile
+	err = city.Update()
+	if err != nil {
+		utils.Respond(w, utils.Message(false, "Cannot update city object in the database"))
+		log.Fatal(err.Error())
+		return
+	}
+
+	resp := utils.Message(true, "Country was successfully updated")
+	utils.Respond(w, resp)
+}
 

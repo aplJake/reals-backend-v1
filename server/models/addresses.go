@@ -7,13 +7,13 @@ import (
 )
 
 type Country struct {
-		CountryId   uint   `json:"country_id"`
+		CountryId   uint   `json:"country_id,string"`
 		CountryName string `json:"country_name"`
 		CountryCode string `json:"country_code"`
 }
 
 var getAllCountriesQ = `
-	SELECT * FROM country;
+	SELECT * FROM country ORDER BY country_id DESC;
 `
 
 var getCountryQ = ` SELECT * FROM country WHERE country_id=?`
@@ -82,6 +82,20 @@ func (country *Country) Update() error  {
 	return nil
 }
 
+func (city *City) Update() error  {
+	db := InitDB()
+
+	_, err := db.Exec("UPDATE city SET country_id=?, city_name=? WHERE city_id=?",
+		city.CountryId, city.CityName, city.CityId)
+	defer db.Close()
+
+	if err != nil {
+		log.Fatal(err.Error())
+		return errors.New("Cannot update a city in db")
+	}
+	return nil
+}
+
 func CountryExists(countryName string) bool {
 	db := InitDB()
 	sqlStmt := "SELECT country_name FROM country WHERE country_name=?"
@@ -109,12 +123,12 @@ func hadleError(err error) {
 }
 
 type City struct {
-		CityId    uint   `json:"city_id"`
+		CityId    uint   `json:"city_id,string"`
 		CityName  string `json:"city_name"`
-		CountryId uint   `json:"country_id"`
+		CountryId uint   `json:"country_id,string"`
 }
 var getAllCitiesQ = `
-	SELECT * FROM city;
+	SELECT * FROM city ORDER BY city_id DESC;
 `
 func GetAllCities() ([]City, error) {
 	db := InitDB()
@@ -154,6 +168,46 @@ func (c *Country) FindCitiesByCountry() ([]City, error)  {
 
 		defer db.Close()
 		return citiesArr, nil
+}
+
+func (city *City) Create() error {
+	// Validate Country obj (it must be unique in the database
+	if ok := CityExists(city.CityName); ok {
+		log.Println("Country name is exists")
+		return errors.New("County with such name is already exists")
+	}
+
+	db := InitDB()
+
+	_, err := db.Exec("INSERT into city(country_id, city_name) VALUES (?, ?)",
+		city.CountryId, city.CityName)
+	defer db.Close()
+
+	if err != nil {
+		log.Fatal(err.Error())
+		return errors.New("Cannot insert a new city to the db")
+	}
+	return nil
+}
+
+func CityExists(cityName string) bool  {
+	db := InitDB()
+	sqlStmt := "SELECT city_name FROM city WHERE city_name=?"
+	err := db.QueryRow(sqlStmt, cityName).Scan(&cityName)
+
+	defer db.Close()
+
+	if err != nil {
+		if err != sql.ErrNoRows {
+			// a real error happened! you should change your function return
+			// to "(bool, error)" and return "false, err" here
+			log.Print(err)
+		}
+
+		return false
+	}
+
+	return true
 }
 
 type Addresses struct {
