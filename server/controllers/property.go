@@ -13,13 +13,13 @@ func GetAllListings(w http.ResponseWriter, r *http.Request) {
 				err      error
 		)
 		// Request all the data from the database
-		listings, err = models.GetAllListings()
+		listings, err = models.GetListingsList()
 		if err != nil {
 				panic(err.Error())
 		}
 
 		resp := utils.Message(true, "Listings are sended")
-		resp["countries"] = listings
+		resp["listings"] = listings
 		// Respond to the client and ...
 		utils.Respond(w, resp)
 }
@@ -36,7 +36,7 @@ func GetApartmentListings(w http.ResponseWriter, r *http.Request) {
 		}
 
 		resp := utils.Message(true, "Listings are sended")
-		resp["countries"] = listings
+		resp["listings"] = listings
 		// Respond to the client and ...
 		utils.Respond(w, resp)
 }
@@ -53,7 +53,7 @@ func GetHomeListings(w http.ResponseWriter, r *http.Request) {
 		}
 
 		resp := utils.Message(true, "Listings are sended")
-		resp["countries"] = listings
+		resp["listings"] = listings
 		// Respond to the client and ...
 		utils.Respond(w, resp)
 }

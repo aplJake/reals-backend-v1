@@ -15,7 +15,7 @@ func GetCountries(w http.ResponseWriter, r *http.Request) {
 		var err error
 
 		// Request all the data from the database
-		countries, err = models.GetAllCountries()
+		countries, err = models.GetAllCountries(true)
 		if err != nil {
 				panic(err.Error())
 		}
@@ -24,6 +24,24 @@ func GetCountries(w http.ResponseWriter, r *http.Request) {
 		resp["countries"] = countries
 		// Respond to the client and ...
 		utils.Respond(w, resp)
+}
+
+// GetCountriesWithCities method GETs only countries that contains at least
+// one ity
+func GetCountriesWithCities(w http.ResponseWriter, r *http.Request) {
+	var countries []models.Country
+	var err error
+
+	// Request all the data from the database
+	countries, err = models.GetAllCountries(false)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	resp := utils.Message(true, "Coutries are sended")
+	resp["countries"] = countries
+	// Respond to the client and ...
+	utils.Respond(w, resp)
 }
 
 // Add Country

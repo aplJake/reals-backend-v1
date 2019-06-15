@@ -1,5 +1,6 @@
 package models
 
+import "C"
 import (
 	"database/sql"
 	"errors"
@@ -30,10 +31,21 @@ func DBGetCountry(countryID string) Country  {
 		return country
 }
 
-func GetAllCountries() ([]Country, error) {
+func GetAllCountries(onlyWithCities bool) ([]Country, error) {
 		db := InitDB()
+		var query string
 
-		res, err := db.Query(getAllCountriesQ)
+		if onlyWithCities {
+			query = `SELECT * FROM country ORDER BY country_id DESC;`
+		} else {
+			query = `SELECT DISTINCT CON.country_id,
+				        CON.country_name,
+				        CON.zip_code
+				FROM country CON
+				    INNER JOIN city C on CON.country_id = C.country_id;
+				`
+		}
+		res, err := db.Query(query)
 		handleError(err)
 
 		country := Country{}

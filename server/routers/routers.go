@@ -39,7 +39,7 @@ func UserProfile() *chi.Mux {
 
 func ListingsPages() *chi.Mux {
 		router := chi.NewRouter()
-		router.Get("/all-countries", controllers.GetAllListings)
+		router.Get("/all-listings", controllers.GetAllListings)
 		router.Get("/apartments", controllers.GetApartmentListings)
 		router.Get("/homes", controllers.GetHomeListings)
 		router.Route("/data", func(r chi.Router) {
@@ -107,12 +107,13 @@ func QueueCtx(next http.Handler) http.Handler {
 func CountriesAnonymousHandler() *chi.Mux {
 		router := chi.NewRouter()
 		router.Get("/", controllers.GetCountries)
+		router.Get("/with-cities", controllers.GetCountriesWithCities)
 		router.Post("/", controllers.AddNewCountry)
 		router.Put("/", controllers.UpdateCountry)
 		router.With(CountryDeleteCtx).Delete("/{countryID}", controllers.DeleteCountry)
 
 		// Cities Country
-		router.With(CountryCtx).Get("/{countryID}", controllers.GetCitiesByCountry)
+		router.With(CountryCtx).Get("/{countryID}/cities", controllers.GetCitiesByCountry)
 		return router
 }
 

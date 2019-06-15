@@ -14,8 +14,6 @@ type Property struct {
 	PropertyId          uint   `json:"property_id"`
 	RoomNumber          string `json:"room_number,string"`
 	ConstructionType    string `json:"construction_type"`
-	KidsAllowed         bool   `json:"kids_allowed"`
-	PetsAllowed         bool   `json:"pets_allowed"`
 	Area                int    `json:"area,string"`
 	BathroomNumber      int    `json:"bathroom_number,string"`
 	MaxFloorNumber      int    `json:"max_floor_number,string"`
@@ -100,25 +98,21 @@ func CreateListing(listing *PropertyListingRequest) map[string]interface{} {
 	}
 	fmt.Println("Property listing 2")
 	fmt.Println(listing.RoomNumber, listing.ConstructionType,
-		listing.KidsAllowed, listing.PetsAllowed, listing.Area,
-		listing.BathroomNumber, listing.MaxFloorNumber, listing.PropertyFloorNumber)
+		listing.Area, listing.BathroomNumber, listing.MaxFloorNumber, listing.PropertyFloorNumber)
 
 	// Insert data to the property table
 	var insertNewPropertyQ = `
-				INSERT INTO property(
-                room_number,
-				construction_type,
-				kids_allowed,
-				pets_allowed,
-                area,
-				bathroom_number,
-				max_floor_number,
-				property_floor_number
-				) VALUES(?,?,?,?,?,?,?,?);
-		`
+		INSERT INTO property(
+		room_number,
+		construction_type,
+		area,
+		bathroom_number,
+		max_floor_number,
+		property_floor_number
+		) VALUES(?,?,?,?,?,?);
+	`
 	res, err := tx.Exec(insertNewPropertyQ, listing.RoomNumber, listing.ConstructionType,
-		listing.KidsAllowed, listing.PetsAllowed, listing.Area,
-		listing.BathroomNumber, listing.MaxFloorNumber, listing.PropertyFloorNumber)
+		listing.Area, listing.BathroomNumber, listing.MaxFloorNumber, listing.PropertyFloorNumber)
 
 	//fmt.Println(err.Error())
 
@@ -133,13 +127,13 @@ func CreateListing(listing *PropertyListingRequest) map[string]interface{} {
 	//TODO: add transaction for adress adding
 	var insertNewStreetQ = `
 		INSERT INTO addresses(
-				city_id,
+			city_id,
 		        street_name,
 		        street_number
 		) VALUES (?,?,?);
 		`
-	res2, err := tx.Exec(insertNewStreetQ, listing.AddressesRequest.CityID, listing.AddressesRequest.StreetName,
-		listing.AddressesRequest.StreetNumber)
+	res2, err := tx.Exec(insertNewStreetQ, listing.CityID, listing.StreetName,
+		listing.StreetNumber)
 	if err != nil {
 		panic(err.Error())
 		if err := tx.Rollback(); err != nil {
@@ -172,7 +166,7 @@ func CreateListing(listing *PropertyListingRequest) map[string]interface{} {
 				        listing_description, 
 				        listing_price, 
 				    	listing_currency, 
-						listing_is_active
+					listing_is_active
 				) VALUES (?,?,?,?,?,?,?);
 		`
 	fmt.Println("Error code", id, seller.ID, countryId, listing.ListingDescription,
@@ -231,11 +225,16 @@ var getAllListings = `
 	SELECT * FROM property_listing;
 `
 
-func GetAllListings() ([]PropertyListing, error) {
+func GetListingsList() ([]PropertyListing, error) {
+	fmt.Println("Getting all listings");
+
 	db := InitDB()
 
 	res, err := db.Query(getAllListings)
 	handleError(err)
+
+	defer db.Close()
+
 
 	var listing PropertyListing
 	var listingsArr []PropertyListing
@@ -244,8 +243,8 @@ func GetAllListings() ([]PropertyListing, error) {
 			&listing.ListingPrice, &listing.ListingCurrency, &listing.ListingIsActive, &listing.CreatedAt, &listing.UpdatedAt)
 		handleError(err)
 		listingsArr = append(listingsArr, listing)
+		fmt.Println(listingsArr)
 	}
-	defer db.Close()
 
 	return listingsArr, nil
 }
@@ -280,23 +279,24 @@ func GetListingsByType(propertyType string) ([]PropertyListing, error) {
 //Response serializer
 // Uses for grouping data of Property and PropertyListing
 type PropertyListingRequest struct {
-	PropertyId          uint   `db:"property_id" json:"property_id"`
-	UserId              uint   `db:"user_id"json:"user_id"`
-	ConstructionType    string `db:"construction_type" json:"construction_type"`
-	Area                int    `db:"area" json:"area,string"`
-	RoomNumber          int    `db:"room_number" json:"room_number,string"`
-	BathroomNumber      int    `db:"bathroom_number" json:"bathroom_number,string"`
-	MaxFloorNumber      string `db:"max_floor_number" json:"max_floor_number"`
-	PropertyFloorNumber string `db:"property_floor_number" json:"property_floor_number"`
-	KidsAllowed         bool   `db:"kids_allowed" json:"kids_allowed,string"`
-	PetsAllowed         bool   `db:"pets_allowed" json:"pets_allowed,string"`
+	PropertyId          uint   `json:"property_id"`
+	UserId              uint   `json:"user_id"`
+	ConstructionType    string `json:"construction_type"`
+	Area                int    `json:"area,string"`
+	RoomNumber          int    `json:"room_number,string"`
+	BathroomNumber      int    `json:"bathroom_number,string"`
+	MaxFloorNumber      string `json:"max_floor_number"`
+	PropertyFloorNumber string `json:"property_floor_number"`
 	// Listing
-	ListingDescription string `db:"listing_description" json:"listing_description"`
-	ListingPrice       string `db:"listing_price" json:"listing_price"`
-	ListingCurrency    string `db:"listing_currency" json:"listing_currency"`
-	ListingIsActive    bool   `db: listing_is_active" json:"listing_is_active,string"`
+	ListingDescription string `json:"listing_description"`
+	ListingPrice       string `json:"listing_price"`
+	ListingCurrency    string `json:"listing_currency"`
+	ListingIsActive    bool   `json:"listing_is_active,string"`
 	// Address
-	AddressesRequest *AddressesRequest `json:"addresses"`
+	CityID		uint	`json:"city_id,string"`
+	StreetName   string `json:"street_name"`
+	StreetNumber string `json:"street_number"`
+	CountryID	uint	`json:"country_id,string"`
 }
 
 type PropertyPageData struct {
@@ -355,7 +355,7 @@ func GetPropertyPageData(propertyID string) (PropertyPageData, error) {
 	// For that purpose we use transaction
 	res := db.QueryRow(getPropertyListingDataQ, propertyID)
 	err := res.Scan(&p.Listing.UserID, &p.Address.AddressesId, &p.Listing.ListingDescription, &p.Listing.ListingPrice, &p.Listing.ListingCurrency, &p.Listing.ListingIsActive, &p.Listing.CreatedAt, &p.Listing.UpdatedAt, &p.Property.PropertyId,
-		&p.Property.RoomNumber, &p.Property.ConstructionType, &p.Property.KidsAllowed, &p.Property.PetsAllowed, &p.Property.Area,
+		&p.Property.RoomNumber, &p.Property.ConstructionType, &p.Property.Area,
 		&p.Property.BathroomNumber, &p.Property.MaxFloorNumber, &p.Property.PropertyFloorNumber, &p.Address.CityId, &p.Address.StreetName, &p.Address.StreetNumber)
 
 	if err != nil {
@@ -415,11 +415,11 @@ var getPropertyProfileDataQ = `
 			   S.telephone_number,
 			   U.user_name,
 			   U.user_email
-		from property_queue Q
-			inner join seller S on Q.user_id = S.user_id
+		from property_listing L
+			inner join seller S on L.user_id = S.user_id
 			inner join user_profile UP on S.user_id = UP.user_id
 			inner join users U on UP.user_id = U.user_id
-		where Q.property_id = ?;
+		where L.property_id = ?;
 `
 
 func GetPropertyProfileData(propertyID string) (PropertyProfileData, error) {
