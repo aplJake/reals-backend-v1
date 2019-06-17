@@ -32,6 +32,7 @@ func InitRouter() *chi.Mux {
 				r.Mount("/regions", routers.CityRegionHandler())
 
 				r.Mount("/pages", routers.ListingsPages())
+				r.Mount("/queue", routers.PropertyQueueHandler())
 				r.Mount("/admin/{userId}", routers.AdminPageHandler())
 		})
 
@@ -50,3 +51,21 @@ func main() {
 		models.InitAdmin()
 		log.Fatal(http.ListenAndServe(":2308", router))
 }
+
+//func QueueCtx(next http.Handler) http.Handler {
+//	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+//		var queue models.Queue
+//		var propertyID, userID string
+//
+//		if propertyID = chi.URLParam(r, "propertyID"); propertyID != "" {
+//			queue.PropertyID = propertyID
+//		}
+//
+//		if userID = chi.URLParam(r, "userID"); userID != "" {
+//			queue.UserID = userID
+//		}
+//
+//		ctx := context.WithValue(r.Context(), "queueData", queue)
+//		next.ServeHTTP(w, r.WithContext(ctx))
+//	})
+//}

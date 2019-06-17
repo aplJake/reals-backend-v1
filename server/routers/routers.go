@@ -220,6 +220,31 @@ func CityRegionIDCtx(next http.Handler) http.Handler {
 	})
 }
 
+func PropertyQueueHandler() *chi.Mux  {
+	router := chi.NewRouter()
+	router.With(QueuePropertyCtx).Delete("/{userID}/property/{propertyID}", controllers.DeleteQueueUser)
+	router.Post("/", controllers.AddUserToQueue)
+	return router
+}
+
+func QueuePropertyCtx(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var queue models.Queue
+		var propertyID, userID string
+
+		if propertyID = chi.URLParam(r, "propertyID"); propertyID != "" {
+			queue.PropertyID = propertyID
+		}
+
+		if userID = chi.URLParam(r, "userID"); userID != "" {
+			queue.UserID = userID
+		}
+
+		ctx := context.WithValue(r.Context(), "queueData", queue)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
+
 func AdminPageHandler() *chi.Mux {
 	router := chi.NewRouter()
 	router.Use(middleware.AdminOnly)
@@ -243,14 +268,3 @@ func AdminDeleteCtx(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
-
-//
-//func (s *server) adminOnly(h http.HandlerFunc) http.HandlerFunc {
-//		return func(w http.ResponseWriter, r *http.Request) {
-//				if !currentUser(r).IsAdmin {
-//						http.NotFound(w, r)
-//						return
-//				}
-//				h(w, r)
-//		}
-//}

@@ -70,12 +70,3 @@ func GetPropertyPageData(w http.ResponseWriter, r *http.Request) {
 		// Respond to the client and ...
 		utils.Respond(w, resp)
 }
-
-func GetPropertyQueue(w http.ResponseWriter, r *http.Request) {
-		var propertyPageData models.PropertyCtxData
-
-		propertyPageData = r.Context().Value("propertyData").(models.PropertyCtxData)
-		resp := utils.Message(true, "Queues are sended")
-		resp["property_queue_data"] = propertyPageData
-		utils.Respond(w, resp)
-}

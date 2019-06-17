@@ -143,7 +143,7 @@ func CreateListing(listing *PropertyListingRequest) map[string]interface{} {
 	res, err = tx.Exec(insertNewListingQ, id, seller.ID, countryId, listing.ListingDescription,
 		listing.ListingPrice, listing.ListingCurrency, listing.ListingIsActive)
 	if err != nil {
-		panic(err.Error())
+		//panic(err.Error())
 		if err := tx.Rollback(); err != nil {
 			panic(err.Error())
 		}
@@ -416,6 +416,7 @@ type PropertyProfileData struct {
 }
 
 type PropertyQueueData struct {
+	UserID 		uint `json:"user_id"`
 	UserName  string    `json:"user_name"`
 	QueueTime time.Time `json:"queue_time"`
 }
@@ -426,8 +427,9 @@ type PropertyCtxData struct {
 }
 
 var getPropertyQueueDataQ = `
-		select U.user_name,
-			   Q.queue_time
+		select U.user_id,
+		       U.user_name,
+		    	Q.queue_time
 		from property_queue Q
 				 inner join users U on Q.user_id = U.user_id
 		where Q.property_id = ?;
@@ -444,7 +446,7 @@ func GetProperyQueue(propertyID string) ([]PropertyQueueData, error) {
 
 	defer db.Close()
 	for res.Next() {
-		err = res.Scan(&qData.UserName, &qData.QueueTime)
+		err = res.Scan(&qData.UserID, &qData.UserName, &qData.QueueTime)
 		handleError(err)
 		qDataArr = append(qDataArr, qData)
 	}

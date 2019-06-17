@@ -2,15 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b31b8f13-4618-4fc4-becc-36cab2321cd5" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/AdminPage/RegionsAdminInfo.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend" beforeDir="false" afterPath="$PROJECT_DIR$/frontend" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/AdminPage/CitiesAdminInfo.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/AdminPage/CitiesAdminInfo.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/AdminPage/CountriesAdminInfo.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/AdminPage/CountriesAdminInfo.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/AdminPage/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/AdminPage/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/UserProfile/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/UserProfile/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/PropertyPage/PropertyQueue.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/PropertyPage/PropertyQueue.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/PropertyPage/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/PropertyPage/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/controllers/property.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/controllers/property.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/city_addr.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/test/city_addr.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/regex_validation.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/test/regex_validation.go" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -69,75 +67,63 @@
     </expanded>
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="vertical" split-proportion="0.89902914">
+    <splitter split-orientation="vertical" split-proportion="0.12093023">
       <split-first>
-        <splitter split-orientation="horizontal" split-proportion="0.5">
-          <split-first>
-            <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-              <file pinned="false" current-in-tab="true">
-                <entry file="file://$PROJECT_DIR$/frontend/src/components/AdminPage/RegionsAdminInfo.js">
-                  <provider selected="true" editor-type-id="text-editor">
-                    <state relative-caret-position="136">
-                      <caret line="234" column="16" lean-forward="true" selection-start-line="228" selection-start-column="14" selection-end-line="234" selection-end-column="16" />
-                      <folding>
-                        <element signature="e#0#41#0" expanded="true" />
-                      </folding>
-                    </state>
-                  </provider>
-                </entry>
-              </file>
-              <file pinned="false" current-in-tab="false">
-                <entry file="file://$PROJECT_DIR$/frontend/src/components/AdminPage/CountriesAdminInfo.js">
-                  <provider selected="true" editor-type-id="text-editor">
-                    <state relative-caret-position="105">
-                      <caret line="43" column="41" lean-forward="true" selection-start-line="43" selection-start-column="41" selection-end-line="43" selection-end-column="41" />
-                      <folding>
-                        <element signature="e#0#41#0" expanded="true" />
-                      </folding>
-                    </state>
-                  </provider>
-                </entry>
-              </file>
-              <file pinned="false" current-in-tab="false">
-                <entry file="file://$PROJECT_DIR$/frontend/src/components/AdminPage/CitiesAdminInfo.js">
-                  <provider selected="true" editor-type-id="text-editor">
-                    <state relative-caret-position="969">
-                      <caret line="196" column="36" lean-forward="true" selection-start-line="196" selection-start-column="36" selection-end-line="196" selection-end-column="36" />
-                      <folding>
-                        <element signature="e#0#41#0" expanded="true" />
-                        <marker date="1560787388396" expanded="true" signature="896:901" ph="..." />
-                      </folding>
-                    </state>
-                  </provider>
-                </entry>
-              </file>
-            </leaf>
-          </split-first>
-          <split-second>
-            <leaf>
-              <file pinned="false" current-in-tab="true">
-                <entry file="file://$PROJECT_DIR$/frontend/src/components/AdminPage/CountriesAdminInfo.js">
-                  <provider selected="true" editor-type-id="text-editor">
-                    <state relative-caret-position="465">
-                      <caret line="208" column="16" selection-start-line="208" selection-start-column="16" selection-end-line="208" selection-end-column="16" />
-                      <folding>
-                        <element signature="e#0#41#0" expanded="true" />
-                      </folding>
-                    </state>
-                  </provider>
-                </entry>
-              </file>
-            </leaf>
-          </split-second>
-        </splitter>
+        <leaf>
+          <file pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/frontend/src/components/PropertyPage/PropertyQueue.js">
+              <provider selected="true" editor-type-id="text-editor">
+                <state>
+                  <caret line="118" column="10" lean-forward="true" selection-start-line="118" selection-start-column="10" selection-end-line="118" selection-end-column="10" />
+                  <folding>
+                    <element signature="e#0#26#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/frontend/src/components/AdminPage/CountriesAdminInfo.js">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="210">
+                  <caret line="158" column="42" lean-forward="true" selection-start-line="150" selection-start-column="4" selection-end-line="158" selection-end-column="42" />
+                  <folding>
+                    <element signature="e#0#41#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/frontend/src/components/PropertyPage/index.js">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="74">
+                  <caret line="218" column="22" lean-forward="true" selection-start-line="218" selection-start-column="22" selection-end-line="218" selection-end-column="22" />
+                  <folding>
+                    <element signature="e#0#26#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+        </leaf>
       </split-first>
       <split-second>
         <leaf>
+          <file pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/server/models/property.go">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="202">
+                  <caret line="144" column="23" lean-forward="true" selection-start-line="144" selection-start-column="23" selection-end-line="144" selection-end-column="23" />
+                </state>
+              </provider>
+            </entry>
+          </file>
           <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/server/main.go">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="105">
-                  <caret line="28" column="66" lean-forward="true" selection-start-line="28" selection-start-column="66" selection-end-line="28" selection-end-column="66" />
+                <state relative-caret-position="118">
+                  <caret line="55" selection-start-line="55" selection-end-line="69" selection-end-column="10" />
                   <folding>
                     <element signature="e#14#334#0" expanded="true" />
                   </folding>
@@ -148,8 +134,32 @@
           <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/server/routers/routers.go">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="2">
-                  <caret line="199" column="24" selection-start-line="199" selection-start-column="24" selection-end-line="199" selection-end-column="24" />
+                <state>
+                  <caret line="235" column="28" selection-start-line="235" selection-start-column="28" selection-end-line="235" selection-end-column="28" />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/server/controllers/queue.go">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="134">
+                  <caret line="48" column="44" selection-start-line="48" selection-start-column="44" selection-end-line="48" selection-end-column="44" />
+                  <folding>
+                    <element signature="e#21#140#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/server/models/queue.go">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="32">
+                  <caret line="8" column="5" selection-start-line="8" selection-start-column="5" selection-end-line="8" selection-end-column="5" />
+                  <folding>
+                    <element signature="e#16#44#0" expanded="true" />
+                  </folding>
                 </state>
               </provider>
             </entry>
@@ -157,32 +167,17 @@
           <file pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/server/controllers/region.go">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="1384">
-                  <caret line="293" column="38" lean-forward="true" selection-start-line="293" selection-start-column="38" selection-end-line="293" selection-end-column="38" />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file pinned="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/frontend/src/components/AdminPage/CountriesAdminInfo.js">
-              <provider selected="true" editor-type-id="text-editor">
-                <state>
-                  <caret line="37" column="5" lean-forward="true" selection-end-line="260" />
-                  <folding>
-                    <element signature="e#0#41#0" expanded="true" />
-                  </folding>
+                <state relative-caret-position="123">
+                  <caret line="257" column="21" selection-start-line="253" selection-start-column="8" selection-end-line="273" selection-end-column="30" />
                 </state>
               </provider>
             </entry>
           </file>
           <file pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/server/models/region.go">
+            <entry file="file://$PROJECT_DIR$/server/controllers/property.go">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="101">
-                  <caret line="272" column="12" selection-start-line="272" selection-start-column="12" selection-end-line="272" selection-end-column="12" />
-                  <folding>
-                    <element signature="e#16#70#0" expanded="true" />
-                  </folding>
+                <state relative-caret-position="284">
+                  <caret line="71" column="1" selection-start-line="71" selection-start-column="1" selection-end-line="71" selection-end-column="1" />
                 </state>
               </provider>
             </entry>
@@ -213,6 +208,10 @@
       <find>country</find>
       <find>countryOnEdit</find>
       <find>handleCountryAddSubmit</find>
+      <find>addNewUserToQueue</find>
+      <find>GetPropertyQueue</find>
+      <find>handleButtonClick</find>
+      <find>userPayload</find>
     </findStrings>
   </component>
   <component name="GOROOT" path="/usr/local/go" />
@@ -226,8 +225,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/server/migrations/v2/create_action_autoremove_data_in_interval.sql" />
-        <option value="$PROJECT_DIR$/server/migrations/v2/up_trigger_autoset_expiery_data_queue.sql" />
         <option value="$APPLICATION_CONFIG_DIR$/consoles/.datagrid/cell" />
         <option value="$PROJECT_DIR$/frontend/src/components/Header.js" />
         <option value="$PROJECT_DIR$/server/controllers/user_controller.go" />
@@ -245,19 +242,15 @@
         <option value="$PROJECT_DIR$/frontend/src/components/AdminPage/UsersAdminInfo.js" />
         <option value="$PROJECT_DIR$/frontend/src/components/AdminPage/AdminsAdminInfo.js" />
         <option value="$PROJECT_DIR$/frontend/src/components/MainPage/index.js" />
-        <option value="$PROJECT_DIR$/frontend/src/components/PropertyPage/PropertyQueue.js" />
         <option value="$PROJECT_DIR$/server/migrations/v1/4_create_property_table.up.sql" />
         <option value="$PROJECT_DIR$/server/migrations/v2/up_profile_notification_table.sql" />
         <option value="$PROJECT_DIR$/server/controllers/addresses.go" />
         <option value="$PROJECT_DIR$/server/controllers/user_profile.go" />
         <option value="$PROJECT_DIR$/frontend/src/components/ListingItem/index.js" />
-        <option value="$PROJECT_DIR$/server/controllers/property.go" />
         <option value="$APPLICATION_CONFIG_DIR$/consoles/db/269feaec-3b57-4e90-a7b0-a1e1860ff82d/console.sql" />
         <option value="$PROJECT_DIR$/server/controllers/seller.go" />
         <option value="$PROJECT_DIR$/server/models/user_profile.go" />
-        <option value="$PROJECT_DIR$/frontend/src/components/PropertyPage/index.js" />
         <option value="$PROJECT_DIR$/server/models/addresses.go" />
-        <option value="$PROJECT_DIR$/server/models/property.go" />
         <option value="$PROJECT_DIR$/frontend/src/components/PropertForm/UpdatePropertyForm.js" />
         <option value="$PROJECT_DIR$/frontend/src/components/PropertForm/index.js" />
         <option value="$PROJECT_DIR$/frontend/src/components/auth/Signin.js" />
@@ -269,14 +262,20 @@
         <option value="$PROJECT_DIR$/frontend/src/components/UserProfile/index.js" />
         <option value="$PROJECT_DIR$/frontend/src/components/AdminPage/index.js" />
         <option value="$PROJECT_DIR$/frontend/src/index.js" />
-        <option value="$PROJECT_DIR$/server/main.go" />
-        <option value="$PROJECT_DIR$/server/routers/routers.go" />
         <option value="$PROJECT_DIR$/server/models/region.go" />
         <option value="$PROJECT_DIR$/frontend/src/components/auth/Signup.js" />
         <option value="$PROJECT_DIR$/frontend/src/components/AdminPage/RegionsAdminInfo.js" />
         <option value="$PROJECT_DIR$/frontend/src/components/AdminPage/CitiesAdminInfo.js" />
         <option value="$PROJECT_DIR$/server/controllers/region.go" />
         <option value="$PROJECT_DIR$/frontend/src/components/AdminPage/CountriesAdminInfo.js" />
+        <option value="$PROJECT_DIR$/server/controllers/property.go" />
+        <option value="$PROJECT_DIR$/server/models/queue.go" />
+        <option value="$PROJECT_DIR$/server/main.go" />
+        <option value="$PROJECT_DIR$/server/routers/routers.go" />
+        <option value="$PROJECT_DIR$/frontend/src/components/PropertyPage/index.js" />
+        <option value="$PROJECT_DIR$/server/controllers/queue.go" />
+        <option value="$PROJECT_DIR$/frontend/src/components/PropertyPage/PropertyQueue.js" />
+        <option value="$PROJECT_DIR$/server/models/property.go" />
       </list>
     </option>
   </component>
@@ -336,6 +335,14 @@
             <path>
               <item name="reals-course" type="b2602c69:ProjectViewProjectNode" />
               <item name="reals-course" type="462c0819:PsiDirectoryNode" />
+              <item name="frontend" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="components" type="462c0819:PsiDirectoryNode" />
+              <item name="PropertyPage" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="reals-course" type="b2602c69:ProjectViewProjectNode" />
+              <item name="reals-course" type="462c0819:PsiDirectoryNode" />
               <item name="server" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -355,11 +362,6 @@
               <item name="reals-course" type="462c0819:PsiDirectoryNode" />
               <item name="server" type="462c0819:PsiDirectoryNode" />
               <item name="routers" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="reals-course" type="b2602c69:ProjectViewProjectNode" />
-              <item name="reals-course" type="462c0819:PsiDirectoryNode" />
-              <item name="test" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -390,10 +392,10 @@
       <recent name="$PROJECT_DIR$/frontend/public" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/server" />
       <recent name="$PROJECT_DIR$/test" />
       <recent name="$PROJECT_DIR$/frontend/src/components" />
       <recent name="$PROJECT_DIR$" />
-      <recent name="$PROJECT_DIR$/server" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -495,18 +497,18 @@
       <workItem from="1560587934597" duration="11321000" />
       <workItem from="1560618612505" duration="14641000" />
       <workItem from="1560679420525" duration="21515000" />
-      <workItem from="1560738204961" duration="23187000" />
+      <workItem from="1560738204961" duration="34035000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="177360000" />
+    <option name="totallyTimeSpent" value="188208000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="41" y="-4" width="1325" height="772" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" weight="0.2385035" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.2385035" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -515,7 +517,7 @@
       <window_info id="Favorites" order="6" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.13521545" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49919486" visible="true" weight="0.056463595" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.49919486" visible="true" weight="0.35958394" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -523,7 +525,7 @@
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="8" weight="0.32986626" />
       <window_info anchor="bottom" id="Database Changes" order="9" />
-      <window_info anchor="bottom" id="Terminal" order="10" weight="0.09063893" />
+      <window_info anchor="bottom" id="Terminal" order="10" weight="0.1307578" />
       <window_info anchor="bottom" id="Event Log" order="11" sideWeight="0.50080514" side_tool="true" weight="0.24496125" />
       <window_info anchor="bottom" id="Database Console" order="12" weight="0.6641902" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -534,10 +536,10 @@
       <window_info anchor="right" id="Maven" order="5" weight="0.32969603" />
       <window_info anchor="right" id="Capture Analysis" order="6" />
       <window_info anchor="right" id="Palette&#9;" order="7" />
-      <window_info anchor="right" id="Database" order="8" weight="0.14497273" />
+      <window_info anchor="right" id="Database" order="8" visible="true" weight="0.105222136" />
     </layout>
     <layout-to-restore>
-      <window_info content_ui="combo" id="Project" order="0" weight="0.20966485" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.2385035" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -545,27 +547,27 @@
       <window_info id="Capture Tool" order="5" />
       <window_info id="Favorites" order="6" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.26597324" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.13521545" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49919486" visible="true" weight="0.114413075" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Version Control" order="8" />
+      <window_info anchor="bottom" id="Version Control" order="8" weight="0.32986626" />
       <window_info anchor="bottom" id="Database Changes" order="9" />
-      <window_info anchor="bottom" id="Terminal" order="10" />
-      <window_info anchor="bottom" id="Event Log" order="11" side_tool="true" />
-      <window_info active="true" anchor="bottom" id="Database Console" order="12" visible="true" weight="0.32838038" />
+      <window_info anchor="bottom" id="Terminal" order="10" weight="0.1307578" />
+      <window_info anchor="bottom" id="Event Log" order="11" sideWeight="0.50080514" side_tool="true" weight="0.24496125" />
+      <window_info anchor="bottom" id="Database Console" order="12" weight="0.6641902" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
-      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.24941543" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="right" id="Palette" order="3" />
       <window_info anchor="right" id="Theme Preview" order="4" />
-      <window_info anchor="right" id="Maven" order="5" />
+      <window_info anchor="right" id="Maven" order="5" weight="0.32969603" />
       <window_info anchor="right" id="Capture Analysis" order="6" />
       <window_info anchor="right" id="Palette&#9;" order="7" />
-      <window_info anchor="right" id="Database" order="8" visible="true" weight="0.20420888" />
+      <window_info anchor="right" id="Database" order="8" weight="0.31956354" />
     </layout-to-restore>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -589,24 +591,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="das://269feaec-3b57-4e90-a7b0-a1e1860ff82d/schema/reals/table/admins">
-      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
-        <state projectRestartId="d35ded44-27b8-400f-96a3-9cf00e9dc709">
-          <filtering>
-            <filter text="" />
-          </filtering>
-        </state>
-      </provider>
-    </entry>
-    <entry file="das://269feaec-3b57-4e90-a7b0-a1e1860ff82d/schema/reals/table/city">
-      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
-        <state projectRestartId="d35ded44-27b8-400f-96a3-9cf00e9dc709">
-          <filtering>
-            <filter text="" />
-          </filtering>
-        </state>
-      </provider>
-    </entry>
     <entry file="das://269feaec-3b57-4e90-a7b0-a1e1860ff82d/schema/reals/table/country">
       <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
         <state projectRestartId="d35ded44-27b8-400f-96a3-9cf00e9dc709">
@@ -622,16 +606,6 @@
           <caret line="69" column="71" lean-forward="true" selection-start-line="69" selection-start-column="39" selection-end-line="69" selection-end-column="71" />
           <folding>
             <element signature="e#0#41#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/frontend/src/components/PropertyPage/PropertyQueue.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
-          <caret line="91" lean-forward="true" selection-start-line="91" selection-end-line="91" />
-          <folding>
-            <element signature="e#0#26#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -667,28 +641,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="das://269feaec-3b57-4e90-a7b0-a1e1860ff82d/schema/reals/table/seller">
-      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
-        <state projectRestartId="d35ded44-27b8-400f-96a3-9cf00e9dc709">
-          <filtering>
-            <filter text="" />
-          </filtering>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/server/controllers/user_profile.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="98">
           <caret line="55" column="5" selection-start-line="55" selection-start-column="5" selection-end-line="55" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="das://269feaec-3b57-4e90-a7b0-a1e1860ff82d/schema/reals/table/property">
-      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
-        <state projectRestartId="03b602aa-14f0-4f0a-a2df-0ac5fe4e2c30">
-          <filtering>
-            <filter text="" />
-          </filtering>
         </state>
       </provider>
     </entry>
@@ -738,39 +694,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="das://269feaec-3b57-4e90-a7b0-a1e1860ff82d/schema/reals/table/property_listing">
-      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
-        <state projectRestartId="587f24f4-77fe-4cf7-996e-7c5b3c4a572b">
-          <filtering>
-            <filter text="" />
-          </filtering>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/server/controllers/property.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="800">
-          <caret line="60" column="5" selection-start-line="60" selection-start-column="5" selection-end-line="60" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/frontend/src/components/ListingItem/index.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="126">
           <caret line="50" column="6" selection-start-line="50" selection-start-column="6" selection-end-line="50" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/frontend/src/components/PropertyPage/index.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-315">
-          <caret line="99" column="16" lean-forward="true" selection-start-line="99" selection-start-column="16" selection-end-line="99" selection-end-column="16" />
-          <folding>
-            <element signature="e#0#26#0" expanded="true" />
-            <element signature="e#3421#3844#0" />
-            <element signature="e#3864#4143#0" />
-            <element signature="e#4304#4337#0" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -810,13 +737,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/server/models/property.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="76">
-          <caret line="536" column="34" lean-forward="true" selection-start-line="536" selection-start-column="34" selection-end-line="536" selection-end-column="34" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/frontend/src/components/PropertForm/UpdatePropertyForm.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1289">
@@ -827,7 +747,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/test/city_addr.go">
+    <entry file="file://$PROJECT_DIR$/server/test/city_addr.go">
       <provider selected="true" editor-type-id="text-editor">
         <state>
           <caret column="1" selection-start-column="1" selection-end-column="1" />
@@ -837,7 +757,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/test/regex_validation.go">
+    <entry file="file://$PROJECT_DIR$/server/test/regex_validation.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="155">
           <caret line="15" column="53" selection-start-line="15" selection-start-column="53" selection-end-line="15" selection-end-column="53" />
@@ -904,26 +824,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/frontend/src/components/AdminPage/AdminsAdminInfo.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
-          <caret line="54" column="1" lean-forward="true" selection-start-line="54" selection-start-column="1" selection-end-line="54" selection-end-column="1" />
-          <folding>
-            <element signature="e#0#41#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/frontend/src/index.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="359">
-          <caret line="64" column="12" lean-forward="true" selection-start-line="64" selection-start-column="12" selection-end-line="64" selection-end-column="12" />
-          <folding>
-            <element signature="e#0#26#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/frontend/src/components/AdminPage/index.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="381">
@@ -938,39 +838,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/server/main.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="28" column="66" lean-forward="true" selection-start-line="28" selection-start-column="66" selection-end-line="28" selection-end-column="66" />
-          <folding>
-            <element signature="e#14#334#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/server/routers/routers.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2">
-          <caret line="199" column="24" selection-start-line="199" selection-start-column="24" selection-end-line="199" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
     <entry file="das://269feaec-3b57-4e90-a7b0-a1e1860ff82d/schema/reals/table/regions">
       <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
         <state projectRestartId="587f24f4-77fe-4cf7-996e-7c5b3c4a572b">
           <filtering>
             <filter text="" />
           </filtering>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/server/models/region.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="101">
-          <caret line="272" column="12" selection-start-line="272" selection-start-column="12" selection-end-line="272" selection-end-column="12" />
-          <folding>
-            <element signature="e#16#70#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -994,9 +867,36 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/frontend/src/components/AdminPage/RegionsAdminInfo.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="37">
+          <caret line="234" column="16" lean-forward="true" selection-start-line="228" selection-start-column="14" selection-end-line="234" selection-end-column="16" />
+          <folding>
+            <element signature="e#0#41#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/server/controllers/property.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="284">
+          <caret line="71" column="1" selection-start-line="71" selection-start-column="1" selection-end-line="71" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/frontend/src/components/AdminPage/AdminsAdminInfo.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-546">
+          <caret line="54" column="1" selection-start-line="54" selection-start-column="1" selection-end-line="54" selection-end-column="1" />
+          <folding>
+            <element signature="e#0#41#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/frontend/src/components/AdminPage/CitiesAdminInfo.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="969">
+        <state relative-caret-position="767">
           <caret line="196" column="36" lean-forward="true" selection-start-line="196" selection-start-column="36" selection-end-line="196" selection-end-column="36" />
           <folding>
             <element signature="e#0#41#0" expanded="true" />
@@ -1007,28 +907,129 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/server/controllers/region.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1384">
-          <caret line="293" column="38" lean-forward="true" selection-start-line="293" selection-start-column="38" selection-end-line="293" selection-end-column="38" />
+        <state relative-caret-position="123">
+          <caret line="257" column="21" selection-start-line="253" selection-start-column="8" selection-end-line="273" selection-end-column="30" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/frontend/src/components/AdminPage/RegionsAdminInfo.js">
+    <entry file="file://$PROJECT_DIR$/server/models/region.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="234" column="16" lean-forward="true" selection-start-line="228" selection-start-column="14" selection-end-line="234" selection-end-column="16" />
+        <state relative-caret-position="176">
+          <caret line="280" column="18" lean-forward="true" selection-start-line="273" selection-start-column="8" selection-end-line="280" selection-end-column="18" />
           <folding>
-            <element signature="e#0#41#0" expanded="true" />
+            <element signature="e#16#70#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/frontend/src/index.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="359">
+          <caret line="64" column="12" lean-forward="true" selection-start-line="64" selection-start-column="12" selection-end-line="64" selection-end-column="12" />
+          <folding>
+            <element signature="e#0#26#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/frontend/src/components/AdminPage/CountriesAdminInfo.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="465">
-          <caret line="208" column="16" selection-start-line="208" selection-start-column="16" selection-end-line="208" selection-end-column="16" />
+        <state relative-caret-position="210">
+          <caret line="158" column="42" lean-forward="true" selection-start-line="150" selection-start-column="4" selection-end-line="158" selection-end-column="42" />
           <folding>
             <element signature="e#0#41#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/server/main.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="118">
+          <caret line="55" selection-start-line="55" selection-end-line="69" selection-end-column="10" />
+          <folding>
+            <element signature="e#14#334#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/server/models/queue.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="32">
+          <caret line="8" column="5" selection-start-line="8" selection-start-column="5" selection-end-line="8" selection-end-column="5" />
+          <folding>
+            <element signature="e#16#44#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/frontend/src/components/PropertyPage/index.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="74">
+          <caret line="218" column="22" lean-forward="true" selection-start-line="218" selection-start-column="22" selection-end-line="218" selection-end-column="22" />
+          <folding>
+            <element signature="e#0#26#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/server/controllers/queue.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="134">
+          <caret line="48" column="44" selection-start-line="48" selection-start-column="44" selection-end-line="48" selection-end-column="44" />
+          <folding>
+            <element signature="e#21#140#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/server/routers/routers.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret line="235" column="28" selection-start-line="235" selection-start-column="28" selection-end-line="235" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="das://269feaec-3b57-4e90-a7b0-a1e1860ff82d/schema/reals/table/seller">
+      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
+        <state projectRestartId="587f24f4-77fe-4cf7-996e-7c5b3c4a572b">
+          <filtering>
+            <filter text="" />
+          </filtering>
+        </state>
+      </provider>
+    </entry>
+    <entry file="das://269feaec-3b57-4e90-a7b0-a1e1860ff82d/schema/reals/table/property">
+      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
+        <state projectRestartId="587f24f4-77fe-4cf7-996e-7c5b3c4a572b">
+          <filtering>
+            <filter text="" />
+          </filtering>
+        </state>
+      </provider>
+    </entry>
+    <entry file="das://269feaec-3b57-4e90-a7b0-a1e1860ff82d/schema/reals/table/property_listing">
+      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
+        <state projectRestartId="587f24f4-77fe-4cf7-996e-7c5b3c4a572b">
+          <filtering>
+            <filter text="" />
+          </filtering>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/frontend/src/components/PropertyPage/PropertyQueue.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret line="118" column="10" lean-forward="true" selection-start-line="118" selection-start-column="10" selection-end-line="118" selection-end-column="10" />
+          <folding>
+            <element signature="e#0#26#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/server/models/property.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="202">
+          <caret line="144" column="23" lean-forward="true" selection-start-line="144" selection-start-column="23" selection-end-line="144" selection-end-column="23" />
         </state>
       </provider>
     </entry>
