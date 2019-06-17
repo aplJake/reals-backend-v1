@@ -26,7 +26,7 @@ func InitRouter() *chi.Mux {
 				r.Get("/signup", controllers.GetUser)
 				r.Post("/signin", controllers.UserSignIn)
 
-				r.Mount("/{userId}", routers.UserProfile())
+				r.Mount("/", routers.UserProfile())
 				r.Mount("/countries", routers.CountriesAnonymousHandler())
 				r.Mount("/cities", routers.CitiesAnonymousHandler())
 

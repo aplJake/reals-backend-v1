@@ -10,7 +10,7 @@ import (
 
 // GetProfile returns the profile data by request with context
 // so the UserProfile must be in the context
-var GetProfile = func(w http.ResponseWriter, r *http.Request) {
+func GetProfile(w http.ResponseWriter, r *http.Request) {
 		// Context has the userId information that we use for
 		// handle data from db by this id
 		fmt.Println("1", r)
@@ -28,7 +28,7 @@ var GetProfile = func(w http.ResponseWriter, r *http.Request) {
 		utils.Respond(w, respond)
 }
 
-var UpdateProfile = func(w http.ResponseWriter, r *http.Request) {
+func UpdateProfile(w http.ResponseWriter, r *http.Request) {
 		//profile := r.Context().Value("profile").(*models.UserProfile)
 		profile := &models.UserProfile{}
 
@@ -53,7 +53,7 @@ type Message struct {
 		SecondMessage	string	`json:"second_message"`
 }
 
-var AddAds = func(w http.ResponseWriter, r *http.Request) {
+func AddAds(w http.ResponseWriter, r *http.Request) {
 		msg := &models.UserProfile{}
 
 		err := json.NewDecoder(r.Body).Decode(msg)

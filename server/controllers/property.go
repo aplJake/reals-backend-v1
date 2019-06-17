@@ -1,10 +1,10 @@
 package controllers
 
 import (
-		"fmt"
-		"github.com/aplJake/reals-course/server/models"
-		"github.com/aplJake/reals-course/server/utils"
-		"net/http"
+	"fmt"
+	"github.com/aplJake/reals-course/server/models"
+	"github.com/aplJake/reals-course/server/utils"
+	"net/http"
 )
 
 func GetAllListings(w http.ResponseWriter, r *http.Request) {

@@ -1,100 +1,122 @@
 package routers
 
 import (
-		"context"
-		"fmt"
-		"github.com/aplJake/reals-course/server/controllers"
-		"github.com/aplJake/reals-course/server/models"
-		"github.com/aplJake/reals-course/server/routers/middleware"
-		"github.com/go-chi/chi"
-		"net/http"
+	"context"
+	"fmt"
+	"github.com/aplJake/reals-course/server/controllers"
+	"github.com/aplJake/reals-course/server/models"
+	"github.com/aplJake/reals-course/server/routers/middleware"
+	"github.com/go-chi/chi"
+	"net/http"
 )
 
 func UserAuthentication() *chi.Mux {
-		router := chi.NewRouter()
-		router.Post("/signup", controllers.UserSignUp)
-		router.Get("/signup", controllers.GetUser)
-		router.Post("/signin", controllers.UserSignIn)
-		return router
+	router := chi.NewRouter()
+	router.Post("/signup", controllers.UserSignUp)
+	router.Get("/signup", controllers.GetUser)
+	router.Post("/signin", controllers.UserSignIn)
+	return router
 }
 
 func Users() *chi.Mux {
-		router := chi.NewRouter()
-		router.Get("/countries", controllers.GetUsers)
-		return router
+	router := chi.NewRouter()
+	router.Get("/countries", controllers.GetUsers)
+	return router
 }
 
 func UserProfile() *chi.Mux {
-		router := chi.NewRouter()
-		router.Use(middleware.UserProfileCtx)
-		router.Get("/", controllers.GetProfile)
-		router.Put("/", controllers.UpdateProfile)
-		router.Post("/", controllers.AddAds)
+	router := chi.NewRouter()
+	router.With(middleware.UserProfileCtx).Route("/{userId}", func(r chi.Router) {
+		r.Get("/", controllers.GetProfile)
+		r.Put("/", controllers.UpdateProfile)
+		r.Post("/", controllers.AddAds)
 		// Add bew property from user profile
-		router.Post("/property/new", controllers.NewPropertyListing)
-		router.Get("/property/new", controllers.GetSeller)
+		r.Post("/property/new", controllers.NewPropertyListing)
+		r.Get("/property/new", controllers.GetSeller)
+	})
 
-		return router
+	// Listing manipulations
+	router.Route("/property", func(r chi.Router) {
+		//r.Use(PropertyCtx);
+		r.With(PropertyUpdateCtx).Get("/update/{propertyID}", controllers.GetPropertyListingUpdate)
+		r.Put("/update", controllers.PropertyListingUpdate)
+		r.With(PropertyUpdateCtx).Delete("/delete/{propertyID}", controllers.PropertiesListingDelete)
+	})
+
+	return router
+}
+
+func PropertyUpdateCtx(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		propertyID := chi.URLParam(r, "propertyID")
+		if propertyID == "" {
+			fmt.Print("porpertyID is emty")
+			return
+		}
+
+		ctx := context.WithValue(r.Context(), "propertyID", propertyID)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
 }
 
 func ListingsPages() *chi.Mux {
-		router := chi.NewRouter()
-		router.Get("/all-listings", controllers.GetAllListings)
-		router.Get("/apartments", controllers.GetApartmentListings)
-		router.Get("/homes", controllers.GetHomeListings)
-		router.Route("/data", func(r chi.Router) {
-				//r.Use(PropertyCtx)
-				//localhost/api/pages/data/{propertyID}
-				r.With(PropertyCtx).Get("/{propertyID}", controllers.GetPropertyPageData)
-				r.With(QueueCtx).Get("/{propertyID}/queue", controllers.GetPropertyQueue)
-		})
-		return router
+	router := chi.NewRouter()
+	router.Get("/all-listings", controllers.GetAllListings)
+	router.Get("/apartments", controllers.GetApartmentListings)
+	router.Get("/homes", controllers.GetHomeListings)
+	router.Route("/data", func(r chi.Router) {
+		//r.Use(PropertyCtx)
+		//localhost/api/pages/data/{propertyID}
+		r.With(PropertyCtx).Get("/{propertyID}", controllers.GetPropertyPageData)
+		r.With(QueueCtx).Get("/{propertyID}/queue", controllers.GetPropertyQueue)
+	})
+	return router
 }
 
 type contextResponseWriter struct {
-		http.ResponseWriter
-		ctx context.Context
+	http.ResponseWriter
+	ctx context.Context
 }
 
 func PropertyCtx(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				var propertyData models.PropertyPageData
-				var err error
-				if propertyID := chi.URLParam(r, "propertyID"); propertyID != "" {
-						propertyData, err = models.GetPropertyPageData(propertyID)
-						if err != nil {
-								panic(err.Error())
-								return
-						}
-				} else {
-						fmt.Println("No id ctx")
-						return
-				}
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var propertyData models.PropertyPageData
+		var err error
+		if propertyID := chi.URLParam(r, "propertyID"); propertyID != "" {
+			propertyData, err = models.GetPropertyPageData(propertyID)
+			if err != nil {
+				panic(err.Error())
+				return
+			}
+		} else {
+			fmt.Println("No id ctx", propertyID)
+			return
+		}
 
-				ctx := context.WithValue(r.Context(), "propertyID", propertyData)
-				next.ServeHTTP(w, r.WithContext(ctx))
-		})
+		ctx := context.WithValue(r.Context(), "propertyID", propertyData)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
 }
 
 func QueueCtx(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				var propCtxData models.PropertyCtxData
-				var err error
-				if propertyID := chi.URLParam(r, "propertyID"); propertyID != "" {
-						propCtxData.Queue, err = models.GetProperyQueue(propertyID)
-						if err != nil {
-								panic(err.Error())
-								return
-						}
-						propCtxData.Profile, err = models.GetPropertyProfileData(propertyID)
-				} else {
-						fmt.Println("No id ctx")
-						return
-				}
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var propCtxData models.PropertyCtxData
+		var err error
+		if propertyID := chi.URLParam(r, "propertyID"); propertyID != "" {
+			propCtxData.Queue, err = models.GetProperyQueue(propertyID)
+			if err != nil {
+				panic(err.Error())
+				return
+			}
+			propCtxData.Profile, err = models.GetPropertyProfileData(propertyID)
+		} else {
+			fmt.Println("No id ctx")
+			return
+		}
 
-				ctx := context.WithValue(r.Context(), "propertyData", propCtxData)
-				next.ServeHTTP(w, r.WithContext(ctx))
-		})
+		ctx := context.WithValue(r.Context(), "propertyData", propCtxData)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
 }
 
 //func PropertyAdding() *chi.Mux {
@@ -105,21 +127,21 @@ func QueueCtx(next http.Handler) http.Handler {
 //}
 
 func CountriesAnonymousHandler() *chi.Mux {
-		router := chi.NewRouter()
-		router.Get("/", controllers.GetCountries)
-		router.Get("/with-cities", controllers.GetCountriesWithCities)
-		router.Post("/", controllers.AddNewCountry)
-		router.Put("/", controllers.UpdateCountry)
-		router.With(CountryDeleteCtx).Delete("/{countryID}", controllers.DeleteCountry)
+	router := chi.NewRouter()
+	router.Get("/", controllers.GetCountries)
+	router.Get("/with-cities", controllers.GetCountriesWithCities)
+	router.Post("/", controllers.AddNewCountry)
+	router.Put("/", controllers.UpdateCountry)
+	router.With(CountryDeleteCtx).Delete("/{countryID}", controllers.DeleteCountry)
 
-		// Cities Country
-		router.With(CountryCtx).Get("/{countryID}/cities", controllers.GetCitiesByCountry)
-		return router
+	// Cities Country
+	router.With(CountryCtx).Get("/{countryID}/cities", controllers.GetCitiesByCountry)
+	return router
 }
 
 func CountryDeleteCtx(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		countryID := chi.URLParam(r, "countryID");
+		countryID := chi.URLParam(r, "countryID")
 		if countryID == "" {
 			fmt.Print("countryid is emty")
 			return
@@ -131,18 +153,18 @@ func CountryDeleteCtx(next http.Handler) http.Handler {
 }
 
 func CountryCtx(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				var country models.Country
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var country models.Country
 
-				if countryID := chi.URLParam(r, "countryID"); countryID != "" {
-						country = models.DBGetCountry(countryID)
-				} else {
-						return
-				}
+		if countryID := chi.URLParam(r, "countryID"); countryID != "" {
+			country = models.DBGetCountry(countryID)
+		} else {
+			return
+		}
 
-				ctx := context.WithValue(r.Context(), "coutryID", country)
-				next.ServeHTTP(w, r.WithContext(ctx))
-		})
+		ctx := context.WithValue(r.Context(), "coutryID", country)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
 }
 
 func CitiesAnonymousHandler() *chi.Mux {
@@ -161,7 +183,7 @@ func CitiesAnonymousHandler() *chi.Mux {
 
 func CityDeleteCtx(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		cityID := chi.URLParam(r, "cityID");
+		cityID := chi.URLParam(r, "cityID")
 		if cityID == "" {
 			fmt.Print("city is emty")
 			return
@@ -173,20 +195,20 @@ func CityDeleteCtx(next http.Handler) http.Handler {
 }
 
 func AdminPageHandler() *chi.Mux {
-		router := chi.NewRouter()
-		router.Use(middleware.AdminOnly)
-		// Users info
-		router.Get("/users", controllers.GetUsers)
-		router.Post("/users", controllers.CreateNewAdminUser)
-		// Admins info
-		router.Get("/admins", controllers.GetAdmins)
-		router.With(AdminDeleteCtx).Delete("/admins/{adminID}", controllers.DeleteAdminUser)
-		return router
+	router := chi.NewRouter()
+	router.Use(middleware.AdminOnly)
+	// Users info
+	router.Get("/users", controllers.GetUsers)
+	router.Post("/users", controllers.CreateNewAdminUser)
+	// Admins info
+	router.Get("/admins", controllers.GetAdmins)
+	router.With(AdminDeleteCtx).Delete("/admins/{adminID}", controllers.DeleteAdminUser)
+	return router
 }
 
 func AdminDeleteCtx(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		adminID := chi.URLParam(r, "adminID");
+		adminID := chi.URLParam(r, "adminID")
 		if adminID == "" {
 			return
 		}

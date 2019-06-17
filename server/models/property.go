@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"github.com/aplJake/reals-course/server/utils"
 	_ "github.com/go-sql-driver/mysql"
@@ -59,37 +60,6 @@ func CreateListing(listing *PropertyListingRequest) map[string]interface{} {
 		seller = GetSeller(listing.UserId)
 	}
 
-	//seller := GetSeller(listing.UserId)
-	// Validate Seller Account
-
-	//fmt.Println("Seller fidede ", seller)
-	//if seller == nil {
-	//		// CreateSeller the SellerAccount
-	//		if resp, ok := CreateSeller(listing.UserId, ""); !ok {
-	//				return resp
-	//		}
-	//}
-
-	// TODO: ADD PROPERTY VALIDATION
-	// Validate if the property listing is the first in the table
-	//if r, ok := ListingValidate(listing.UserID); !ok {
-	//		return r
-	//}
-
-	// CreateSeller new Property and property listing with transaction
-
-	//fmt.Println("Property listing", listing)
-	//
-	//_, err := db.Exec(`INSERT INTO property(
-	//            room_number, construction_type, kids_allowed, pets_allowed,
-	//            area, bathroom_number, max_floor_number, property_floor_number)
-	//             VALUES(?,?,?,?,?,?,?,?);`, listing.RoomNumber, listing.ConstructionType,
-	//		listing.KidsAllowed, listing.PetsAllowed, listing.Area,
-	//		listing.BathroomNumber, listing.MaxFloorNumber, listing.PropertyFloorNumber)
-	//if err != nil {
-	//		log.Fatal(err)
-	//}
-
 	tx, err := db.Begin()
 	fmt.Println("Property listing 1")
 
@@ -131,7 +101,7 @@ func CreateListing(listing *PropertyListingRequest) map[string]interface{} {
 		        street_name,
 		        street_number
 		) VALUES (?,?,?);
-		`
+	`
 	res2, err := tx.Exec(insertNewStreetQ, listing.CityID, listing.StreetName,
 		listing.StreetNumber)
 	if err != nil {
@@ -200,6 +170,80 @@ func CreateListing(listing *PropertyListingRequest) map[string]interface{} {
 	// Validate the input data where the fields are strict necessary
 	// Handle errors
 	// Return response
+}
+
+func (l *PropertyListingRequest) UpdateListing() error  {
+	db := InitDB()
+
+	tx, err := db.Begin()
+	if err != nil {
+		return errors.New("DB Transaction begin error")
+	}
+
+	var updatePropertyQ = `
+		UPDATE property
+		SET room_number=?,
+		    construction_type=?,
+		    area=?,
+		    bathroom_number=?,
+		    max_floor_number=?,
+		    property_floor_number=?
+		WHERE property_id=?;
+		    
+	`
+	_, err = tx.Exec(updatePropertyQ, l.RoomNumber, l.ConstructionType, l.Area,
+		l.BathroomNumber, l.MaxFloorNumber, l.PropertyFloorNumber, l.PropertyId)
+	if err != nil {
+		if err := tx.Rollback(); err != nil {
+			return errors.New("Property update transaction error")
+		}
+		return errors.New("Property update error")
+	}
+
+	var updatePropertyStreetQ = `
+		UPDATE addresses
+		SET city_id=?,
+		    street_name=?,
+		    street_number=?
+		WHERE addresses_id=?
+	`
+	_, err = tx.Exec(updatePropertyStreetQ, l.CityID, l.StreetNumber, l.StreetNumber,
+		l.AddressID)
+	if err != nil {
+		if err := tx.Rollback(); err != nil {
+			return errors.New("Addresses update transaction error")
+		}
+		return errors.New("Addresses update error")
+	}
+
+	var updatePropertyListing = `
+		UPDATE property_listing
+		SET property_id=?, 
+		    user_id=?, 
+		    addresses_id=?, 
+		    listing_description=?, 
+		    listing_price=?, 
+		    listing_currency=?, 
+		    listing_is_active=?
+		WHERE property_id=?
+	`
+	_, err = tx.Exec(updatePropertyListing, l.PropertyId, l.UserId, l.AddressID,
+		l.ListingDescription, l.ListingPrice, l.ListingCurrency,
+		l.ListingIsActive, l.PropertyId)
+	if err != nil {
+		if err := tx.Rollback(); err != nil {
+			return errors.New("Listing update transaction error")
+		}
+		//panic(err.Error())
+		return errors.New("Listing update error")
+	}
+
+	if err = tx.Commit(); err != nil {
+		return errors.New("Property listing transacion commit error")
+	}
+
+	defer db.Close()
+	return nil
 }
 
 func handleError(err error) map[string]interface{} {
@@ -283,7 +327,7 @@ type PropertyListingRequest struct {
 	UserId              uint   `json:"user_id"`
 	ConstructionType    string `json:"construction_type"`
 	Area                int    `json:"area,string"`
-	RoomNumber          int    `json:"room_number,string"`
+	RoomNumber          string    `json:"room_number"`
 	BathroomNumber      int    `json:"bathroom_number,string"`
 	MaxFloorNumber      string `json:"max_floor_number"`
 	PropertyFloorNumber string `json:"property_floor_number"`
@@ -297,6 +341,7 @@ type PropertyListingRequest struct {
 	StreetName   string `json:"street_name"`
 	StreetNumber string `json:"street_number"`
 	CountryID	uint	`json:"country_id,string"`
+	AddressID	uint	`json:"address_id,string"`
 }
 
 type PropertyPageData struct {
@@ -434,3 +479,41 @@ func GetPropertyProfileData(propertyID string) (PropertyProfileData, error) {
 
 	return pData, err
 }
+
+var getListingDataForUpdateQ = `
+	SELECT L.user_id,
+	       L.listing_description,
+	       L.listing_price,
+	       L.listing_currency,
+	       L.listing_is_active,
+	       P.*,
+	       C.country_id,
+	       A.city_id, A.street_name, A.street_number, A.addresses_id
+	FROM property_listing L
+		 INNER JOIN property P
+			    ON P.property_id = L.property_id
+		 INNER JOIN addresses A
+			    ON A.addresses_id = L.addresses_id
+		 INNER JOIN city C
+			    ON A.city_id = C.city_id
+	WHERE P.property_id=?;
+`
+func GetPropertyListing(propertyID string) (*PropertyListingRequest, error)  {
+	fmt.Println("Property id 1", propertyID)
+	p := &PropertyListingRequest{}
+	db := InitDB()
+	// We get multiple data from the db
+	// For that purpose we use transaction
+	res := db.QueryRow(getListingDataForUpdateQ, propertyID)
+	err := res.Scan(&p.UserId, &p.ListingDescription, &p.ListingPrice, &p.ListingCurrency, &p.ListingIsActive, &p.PropertyId,
+		&p.RoomNumber, &p.ConstructionType, &p.Area, &p.BathroomNumber, &p.MaxFloorNumber,
+		&p.PropertyFloorNumber, &p.CountryID, &p.CityID, &p.StreetName, &p.StreetNumber, &p.AddressID)
+
+	if err != nil {
+		return nil, errors.New("Error to get proeprty listing from db")
+	}
+
+	defer db.Close()
+	return p, nil
+}
+
