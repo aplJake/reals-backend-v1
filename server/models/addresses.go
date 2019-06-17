@@ -222,18 +222,34 @@ func CityExists(cityName string) bool  {
 	return true
 }
 
-type Addresses struct {
-		AddressesId  uint   `json:"addresses_id"`
-		StreetName   string `json:"street_name"`
-		StreetNumber string `json:"street_number"`
-		CityId       uint   `json:"city_id"`
+type Regions struct {
+	RegionID  uint   `json:"region_id,string"`
+	RegionName   string `json:"region_name"`
+	CityId       uint   `json:"city_id"`
 }
 
 // Router JSON REQUEST MODEL
 type AddressesRequest struct {
-		AddressesID uint `json:"addresses_id,string"`
-		CityID		uint	`db:"city_id" json:"city_id,string"`
-		StreetName   string `db:"street_name" json:"street_name"`
-		StreetNumber string `db:"street_number" json:"street_number"`
-		CountryID	uint	`db:"country_id" json:"country_id,string"`
+	RegionID uint `json:"region_id,string"`
+	CityID		uint	`json:"city_id,string"`
+	RegionName   string `json:"region_name"`
+	CountryID	uint	`json:"country_id,string"`
+}
+
+func GetAllRegions() ([]Regions, error)  {
+	db := InitDB()
+
+	res, err := db.Query("SELECT * FROM regions")
+	handleError(err)
+	defer db.Close()
+
+	region := Regions{}
+	regionsArr := []Regions{}
+	for res.Next() {
+		err = res.Scan(&region.RegionID, &region.CityId, &region.RegionName)
+		handleError(err)
+		regionsArr = append(regionsArr, region)
+	}
+
+	return regionsArr, nil
 }

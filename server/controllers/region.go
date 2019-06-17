@@ -128,6 +128,25 @@ func DeleteCity(w http.ResponseWriter, r *http.Request)  {
 	resp := utils.Message(true, "City was successfully removed")
 	utils.Respond(w, resp)
 }
+
+// REGIONS
+
+// Get all Regions
+func GetRegionsList(w http.ResponseWriter, r *http.Request)  {
+	var regions []models.Regions
+	var err error
+
+	// Request all the data from the database
+	regions, err = models.GetAllRegions()
+	if err != nil {
+		panic(err.Error())
+	}
+
+	resp := utils.Message(true, "Cities are sended")
+	resp["regions"] = regions
+	// Respond to the client and ...
+	utils.Respond(w, resp)
+}
 // CITIES
 
 // Get all Cities

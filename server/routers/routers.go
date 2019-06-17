@@ -172,7 +172,9 @@ func CitiesAnonymousHandler() *chi.Mux {
 	router.Get("/", controllers.GetCitiesList)
 	router.Post("/", controllers.AddNewCity)
 	router.Put("/", controllers.UpdateCity)
-	router.With(CityDeleteCtx).Delete("/{cityID}", controllers.DeleteCity)
+	router.With(CityIDCtx).Delete("/{cityID}", controllers.DeleteCity)
+
+	router.With(CityIDCtx).Get("/{cityID}/regions", controllers.GetRegionsList)
 
 	//router.Route("/{cityID}", func(r chi.Router) {
 	//	r.Use(CountryCtx)
@@ -181,7 +183,7 @@ func CitiesAnonymousHandler() *chi.Mux {
 	return router
 }
 
-func CityDeleteCtx(next http.Handler) http.Handler {
+func CityIDCtx(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		cityID := chi.URLParam(r, "cityID")
 		if cityID == "" {

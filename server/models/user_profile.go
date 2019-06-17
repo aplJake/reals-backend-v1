@@ -114,7 +114,7 @@ func GetLisitingsByProfile(profileID uint) ([]PropertyListing, error)  {
 		listing := PropertyListing{}
 		listingsArr := []PropertyListing{}
 		for res.Next() {
-				err = res.Scan(&listing.PropertyId, &listing.UserID, &listing.AddressesID, &listing.ListingDescription,
+				err = res.Scan(&listing.PropertyId, &listing.UserID, &listing.RegionID, &listing.ListingDescription,
 						&listing.ListingPrice, &listing.ListingCurrency, &listing.ListingIsActive, &listing.CreatedAt, &listing.UpdatedAt)
 				handleError(err)
 				listingsArr = append(listingsArr, listing)

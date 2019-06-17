@@ -343,7 +343,7 @@ type PropertyListingRequest struct {
 type PropertyPageData struct {
 	Listing  PropertyListing `json:"property_listing"`
 	Property Property        `json:"property"`
-	Address  Addresses       `json:"address"`
+	Regions  Regions       `json:"regions"`
 }
 
 // Transaction utils
@@ -395,9 +395,9 @@ func GetPropertyPageData(propertyID string) (PropertyPageData, error) {
 	// We get multiple data from the db
 	// For that purpose we use transaction
 	res := db.QueryRow(getPropertyListingDataQ, propertyID)
-	err := res.Scan(&p.Listing.UserID, &p.Address.AddressesId, &p.Listing.ListingDescription, &p.Listing.ListingPrice, &p.Listing.ListingCurrency, &p.Listing.ListingIsActive, &p.Listing.CreatedAt, &p.Listing.UpdatedAt, &p.Property.PropertyId,
+	err := res.Scan(&p.Listing.UserID, &p.Regions.RegionID, &p.Listing.ListingDescription, &p.Listing.ListingPrice, &p.Listing.ListingCurrency, &p.Listing.ListingIsActive, &p.Listing.CreatedAt, &p.Listing.UpdatedAt, &p.Property.PropertyId,
 		&p.Property.RoomNumber, &p.Property.ConstructionType, &p.Property.Area,
-		&p.Property.BathroomNumber, &p.Property.MaxFloorNumber, &p.Property.PropertyFloorNumber, &p.Address.CityId, &p.Address.StreetName, &p.Address.StreetNumber)
+		&p.Property.BathroomNumber, &p.Property.MaxFloorNumber, &p.Property.PropertyFloorNumber, &p.Regions.CityId, &p.Regions.RegionName)
 
 	if err != nil {
 		panic(err.Error())
@@ -521,20 +521,21 @@ func RemovePropertyListing(propertyID string) error  {
 		 return errors.New("DB Transaction begin error")
 	}
 
-	_, err = tx.Exec("DELETE FROM property WHERE property_id=?;", propertyID)
-	if err != nil {
-		if err := tx.Rollback(); err != nil {
-			return errors.New("Property delete transaction error")
-		}
-		return errors.New("Property delete error")
-	}
-
 	_, err = tx.Exec("DELETE FROM property_listing WHERE property_id=?;", propertyID)
 	if err != nil {
 		if err := tx.Rollback(); err != nil {
 			return errors.New("Property listing delete transaction error")
 		}
 		return errors.New("Property listing delete error")
+	}
+
+	_, err = tx.Exec("DELETE FROM property WHERE property_id=?;", propertyID)
+	if err != nil {
+		if err := tx.Rollback(); err != nil {
+			return errors.New("Property delete transaction error")
+		}
+		panic(err.Error())
+		return errors.New("Property delete error")
 	}
 
 	if err = tx.Commit(); err != nil {
