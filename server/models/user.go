@@ -8,7 +8,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"log"
 	"net/http"
-	"strings"
+	"regexp"
 	"time"
 )
 
@@ -168,11 +168,20 @@ func LogIn(email, password string, w http.ResponseWriter) map[string]interface{}
 */
 func (user *User) Validate() (map[string]interface{}, bool) {
 		var db *sql.DB
-		if !strings.Contains(user.Email, "@") {
-				return utils.Message(false, "Email address is required"), false
+		// Check username
+		if ok, _ := regexp.MatchString("^[a-zA-Z0-9 ]+$", user.UserName); !ok {
+			return utils.Message(false, "Username must contain only letters and numbers"), false
 		}
+
+		// Check email
+		pattern := "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"
+		if ok, _ := regexp.MatchString(pattern, user.Email); !ok {
+			return utils.Message(false, "Change your email address"), false
+		}
+
+		// Check password
 		if len(user.Password) < 6 {
-				return utils.Message(false, "Password is required"), false
+				return utils.Message(false, "Minimum password length must be 6 signs"), false
 		}
 
 		temp := &User{}
@@ -187,7 +196,7 @@ func (user *User) Validate() (map[string]interface{}, bool) {
 		// HAS ERROR 		(no such row) that the data is unique and evth is ok
 		// HAS NOT ERROR	the data is not unique and it is selected from the db
 		if err != sql.ErrNoRows {
-				panic(err.Error())
+				//panic(err.Error())
 				return utils.Message(false, "Connection error. Please retry!"), false
 
 				if temp.Email != "" {
