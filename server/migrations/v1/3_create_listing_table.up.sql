@@ -12,6 +12,6 @@ CREATE TABLE property_listing
     PRIMARY KEY (property_id),
     FOREIGN KEY (user_id) REFERENCES seller (user_id),
     FOREIGN KEY (property_id) REFERENCES property (property_id),
-    FOREIGN KEY (addresses_id) REFERENCES addresses (addresses_id)
+    FOREIGN KEY (addresses_id) REFERENCES regions (region_id)
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1;

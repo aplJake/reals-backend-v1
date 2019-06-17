@@ -24,7 +24,7 @@ type Property struct {
 // LisitngCurrency field holds by default such vars: usd, hrv, eur
 type PropertyListing struct {
 	PropertyId         uint      `json:"property_id"`
-	AddressesID        uint      `json:"addresses_id"`
+	RegionID        uint      `json:"region_id"`
 	UserID             uint      `json:"user_id"`
 	ListingDescription string    `json:"listing_description"`
 	ListingPrice       int       `json:"listing_price,string"`
@@ -96,14 +96,12 @@ func CreateListing(listing *PropertyListingRequest) map[string]interface{} {
 
 	//TODO: add transaction for adress adding
 	var insertNewStreetQ = `
-		INSERT INTO addresses(
+		INSERT INTO regions(
 			city_id,
-		        street_name,
-		        street_number
-		) VALUES (?,?,?);
+		        region_name
+		) VALUES (?,?);
 	`
-	res2, err := tx.Exec(insertNewStreetQ, listing.CityID, listing.StreetName,
-		listing.StreetNumber)
+	res2, err := tx.Exec(insertNewStreetQ, listing.CityID, listing.RegionName)
 	if err != nil {
 		panic(err.Error())
 		if err := tx.Rollback(); err != nil {
@@ -130,9 +128,9 @@ func CreateListing(listing *PropertyListingRequest) map[string]interface{} {
 	//                     listing_price, listing_currency, listing_is_active) VALUES(?,?,?,?,?,?);`
 	var insertNewListingQ = `
 				INSERT INTO property_listing(
-						property_id, 
+					property_id, 
 				        user_id, 
-				        addresses_id, 
+					region_id,
 				        listing_description, 
 				        listing_price, 
 				    	listing_currency, 
@@ -200,34 +198,33 @@ func (l *PropertyListingRequest) UpdateListing() error  {
 		return errors.New("Property update error")
 	}
 
-	var updatePropertyStreetQ = `
-		UPDATE addresses
-		SET city_id=?,
-		    street_name=?,
-		    street_number=?
-		WHERE addresses_id=?
-	`
-	_, err = tx.Exec(updatePropertyStreetQ, l.CityID, l.StreetNumber, l.StreetNumber,
-		l.AddressID)
-	if err != nil {
-		if err := tx.Rollback(); err != nil {
-			return errors.New("Addresses update transaction error")
-		}
-		return errors.New("Addresses update error")
-	}
+	//var updatePropertyStreetQ = `
+	//	UPDATE regions
+	//	SET city_id=?,
+	//	    region_name=?
+	//	WHERE region_id=?
+	//`
+	//_, err = tx.Exec(updatePropertyStreetQ, l.CityID, l.RegionName,
+	//	l.RegionID)
+	//if err != nil {
+	//	if err := tx.Rollback(); err != nil {
+	//		return errors.New("Addresses update transaction error")
+	//	}
+	//	return errors.New("Addresses update error")
+	//}
 
 	var updatePropertyListing = `
 		UPDATE property_listing
 		SET property_id=?, 
 		    user_id=?, 
-		    addresses_id=?, 
+		    region_id=?, 
 		    listing_description=?, 
 		    listing_price=?, 
 		    listing_currency=?, 
 		    listing_is_active=?
 		WHERE property_id=?
 	`
-	_, err = tx.Exec(updatePropertyListing, l.PropertyId, l.UserId, l.AddressID,
+	_, err = tx.Exec(updatePropertyListing, l.PropertyId, l.UserId, l.RegionID,
 		l.ListingDescription, l.ListingPrice, l.ListingCurrency,
 		l.ListingIsActive, l.PropertyId)
 	if err != nil {
@@ -283,7 +280,7 @@ func GetListingsList() ([]PropertyListing, error) {
 	var listing PropertyListing
 	var listingsArr []PropertyListing
 	for res.Next() {
-		err = res.Scan(&listing.PropertyId, &listing.UserID, &listing.AddressesID, &listing.ListingDescription,
+		err = res.Scan(&listing.PropertyId, &listing.UserID, &listing.RegionID, &listing.ListingDescription,
 			&listing.ListingPrice, &listing.ListingCurrency, &listing.ListingIsActive, &listing.CreatedAt, &listing.UpdatedAt)
 		handleError(err)
 		listingsArr = append(listingsArr, listing)
@@ -310,7 +307,7 @@ func GetListingsByType(propertyType string) ([]PropertyListing, error) {
 	var listing PropertyListing
 	var listingsArr []PropertyListing
 	for res.Next() {
-		err = res.Scan(&listing.PropertyId, &listing.UserID, &listing.AddressesID, &listing.ListingDescription,
+		err = res.Scan(&listing.PropertyId, &listing.UserID, &listing.RegionID, &listing.ListingDescription,
 			&listing.ListingPrice, &listing.ListingCurrency, &listing.ListingIsActive, &listing.CreatedAt, &listing.UpdatedAt)
 		handleError(err)
 		listingsArr = append(listingsArr, listing)
@@ -338,10 +335,9 @@ type PropertyListingRequest struct {
 	ListingIsActive    bool   `json:"listing_is_active,string"`
 	// Address
 	CityID		uint	`json:"city_id,string"`
-	StreetName   string `json:"street_name"`
-	StreetNumber string `json:"street_number"`
+	RegionName   string `json:"region_name"`
 	CountryID	uint	`json:"country_id,string"`
-	AddressID	uint	`json:"address_id,string"`
+	RegionID	uint	`json:"region_id,string"`
 }
 
 type PropertyPageData struct {
@@ -369,7 +365,7 @@ func (db *DB) Begin() (*Tx, error) {
 
 var getPropertyListingDataQ = `
 		SELECT L.user_id,
-			   L.addresses_id,
+			   L.region_id,
 			   L.listing_description,
 			   L.listing_price,
 			   L.listing_currency,
@@ -377,12 +373,12 @@ var getPropertyListingDataQ = `
 			   L.created_at,
 			   L.updated_at,
 			   P.*,
-			   A.city_id, A.street_name, A.street_number
+			   A.city_id, A.region_name
 		FROM property_listing L
 				 inner JOIN property P
 							ON P.property_id = L.property_id
-				 inner JOIN addresses A
-							ON A.addresses_id = L.addresses_id
+				 inner JOIN regions A
+							ON A.region_id = L.region_id
 		WHERE P.property_id=?;
 `
 
@@ -488,12 +484,12 @@ var getListingDataForUpdateQ = `
 	       L.listing_is_active,
 	       P.*,
 	       C.country_id,
-	       A.city_id, A.street_name, A.street_number, A.addresses_id
+	       A.city_id, A.region_name, A.region_id
 	FROM property_listing L
 		 INNER JOIN property P
 			    ON P.property_id = L.property_id
-		 INNER JOIN addresses A
-			    ON A.addresses_id = L.addresses_id
+		 INNER JOIN regions A
+			    ON A.region_id = L.region_id
 		 INNER JOIN city C
 			    ON A.city_id = C.city_id
 	WHERE P.property_id=?;
@@ -507,7 +503,7 @@ func GetPropertyListing(propertyID string) (*PropertyListingRequest, error)  {
 	res := db.QueryRow(getListingDataForUpdateQ, propertyID)
 	err := res.Scan(&p.UserId, &p.ListingDescription, &p.ListingPrice, &p.ListingCurrency, &p.ListingIsActive, &p.PropertyId,
 		&p.RoomNumber, &p.ConstructionType, &p.Area, &p.BathroomNumber, &p.MaxFloorNumber,
-		&p.PropertyFloorNumber, &p.CountryID, &p.CityID, &p.StreetName, &p.StreetNumber, &p.AddressID)
+		&p.PropertyFloorNumber, &p.CountryID, &p.CityID, &p.RegionName, &p.RegionID)
 
 	if err != nil {
 		return nil, errors.New("Error to get proeprty listing from db")
@@ -517,3 +513,34 @@ func GetPropertyListing(propertyID string) (*PropertyListingRequest, error)  {
 	return p, nil
 }
 
+func RemovePropertyListing(propertyID string) error  {
+	db := InitDB()
+
+	tx, err := db.Begin()
+	if err != nil {
+		 return errors.New("DB Transaction begin error")
+	}
+
+	_, err = tx.Exec("DELETE FROM property WHERE property_id=?;", propertyID)
+	if err != nil {
+		if err := tx.Rollback(); err != nil {
+			return errors.New("Property delete transaction error")
+		}
+		return errors.New("Property delete error")
+	}
+
+	_, err = tx.Exec("DELETE FROM property_listing WHERE property_id=?;", propertyID)
+	if err != nil {
+		if err := tx.Rollback(); err != nil {
+			return errors.New("Property listing delete transaction error")
+		}
+		return errors.New("Property listing delete error")
+	}
+
+	if err = tx.Commit(); err != nil {
+		return errors.New("Property listing transacion commit error")
+	}
+
+	defer db.Close()
+	return nil
+}

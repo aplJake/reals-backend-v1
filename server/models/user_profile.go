@@ -91,7 +91,7 @@ func GetProfileData(u uint) (UserProfileRespond, error) {
 var getListingsByProfileQ = `
 	SELECT property_id,
 	       user_id,
-	       addresses_id,
+	       region_id,
 	       listing_description,
 	       listing_price,
 	       listing_currency,

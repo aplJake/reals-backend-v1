@@ -87,5 +87,13 @@ func PropertyListingUpdate(w http.ResponseWriter, r *http.Request) {
 // DELETE request handler to remove
 // the property from user profile
 func PropertiesListingDelete(w http.ResponseWriter, r *http.Request) {
+	propertyID := r.Context().Value("propertyID").(string)
 
+	err := models.RemovePropertyListing(propertyID)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	resp := utils.Message(true, "Property listing was successfully removed")
+	utils.Respond(w, resp)
 }
