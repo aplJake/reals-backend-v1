@@ -225,7 +225,7 @@ func CityExists(cityName string) bool  {
 type Regions struct {
 	RegionID  uint   `json:"region_id,string"`
 	RegionName   string `json:"region_name"`
-	CityId       uint   `json:"city_id"`
+	CityId       uint   `json:"city_id,string"`
 }
 
 // Router JSON REQUEST MODEL
@@ -234,6 +234,71 @@ type AddressesRequest struct {
 	CityID		uint	`json:"city_id,string"`
 	RegionName   string `json:"region_name"`
 	CountryID	uint	`json:"country_id,string"`
+}
+
+func (region *Regions) Create() error  {
+	// Validate Country obj (it must be unique in the database
+	if ok := RegionExists(region.RegionName); ok {
+		log.Println("Region name already exists")
+		return errors.New("Region with such name already exists")
+	}
+
+	db := InitDB()
+
+	_, err := db.Exec("INSERT into regions(city_id, region_name) VALUES (?, ?)",
+		region.CityId, region.RegionName)
+	defer db.Close()
+
+	if err != nil {
+		log.Fatal(err.Error())
+		return errors.New("Cannot insert a new region to the db")
+	}
+	return nil
+}
+
+func (region *Regions) Update() error {
+	db := InitDB()
+
+	_, err := db.Exec("UPDATE regions SET city_id=?, region_name=? WHERE region_id=?",
+		region.CityId, region.RegionName, region.RegionID)
+	defer db.Close()
+
+	if err != nil {
+		log.Fatal(err.Error())
+		return errors.New("Cannot update a region in db")
+	}
+	return nil
+}
+
+func DeleteRegion(id string) error  {
+	db := InitDB()
+	_, err := db.Exec("DELETE FROM regions where region_id=?;", id)
+	if err != nil {
+		return errors.New("Delete region in the parent table")
+	}
+
+	defer db.Close()
+	return nil
+}
+
+func RegionExists(cityName string) bool  {
+	db := InitDB()
+	sqlStmt := "SELECT city_name FROM city WHERE city_name=?"
+	err := db.QueryRow(sqlStmt, cityName).Scan(&cityName)
+
+	defer db.Close()
+
+	if err != nil {
+		if err != sql.ErrNoRows {
+			// a real error happened! you should change your function return
+			// to "(bool, error)" and return "false, err" here
+			log.Print(err)
+		}
+
+		return false
+	}
+
+	return true
 }
 
 func GetAllRegions() ([]Regions, error)  {

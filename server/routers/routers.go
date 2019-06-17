@@ -167,6 +167,7 @@ func CountryCtx(next http.Handler) http.Handler {
 	})
 }
 
+// Cities and CityRegion router
 func CitiesAnonymousHandler() *chi.Mux {
 	router := chi.NewRouter()
 	router.Get("/", controllers.GetCitiesList)
@@ -192,6 +193,29 @@ func CityIDCtx(next http.Handler) http.Handler {
 		}
 
 		ctx := context.WithValue(r.Context(), "cityToDeleteID", cityID)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
+
+//localhost:/api/regions/
+func CityRegionHandler() *chi.Mux {
+	router := chi.NewRouter()
+	router.Get("/", controllers.GetRegionsList)
+	router.Post("/", controllers.CreateNewRegion)
+	router.Put("/", controllers.UpdateRegion)
+	router.With(CityRegionIDCtx).Delete("/{regionID}", controllers.DeleteRegionByID)
+	return router
+}
+
+func CityRegionIDCtx(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		regionID := chi.URLParam(r, "regionID")
+		if regionID == "" {
+			fmt.Print("region id is empty")
+			return
+		}
+
+		ctx := context.WithValue(r.Context(), "regionID", regionID)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

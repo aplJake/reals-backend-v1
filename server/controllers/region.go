@@ -103,10 +103,12 @@ func DeleteCountry(w http.ResponseWriter, r *http.Request)  {
 	db := models.InitDB()
 
 	_, err := db.Exec("DELETE FROM country where country_id=?;", countryID)
-	if err != nil {
-		panic(err.Error())
-	}
 	defer db.Close()
+
+	if err != nil {
+		utils.Respond(w, utils.Message(true, "Country cannot be removed"))
+		return
+	}
 
 	resp := utils.Message(true, "Country was successfully removed")
 	utils.Respond(w, resp)
@@ -120,10 +122,11 @@ func DeleteCity(w http.ResponseWriter, r *http.Request)  {
 	db := models.InitDB()
 
 	_, err := db.Exec("DELETE FROM city where city_id=?;", cityID)
-	if err != nil {
-		panic(err.Error())
-	}
 	defer db.Close()
+	if err != nil {
+		utils.Respond(w, utils.Message(true, "City cannot be removed"))
+		return
+	}
 
 	resp := utils.Message(true, "City was successfully removed")
 	utils.Respond(w, resp)
@@ -145,6 +148,67 @@ func GetRegionsList(w http.ResponseWriter, r *http.Request)  {
 	resp := utils.Message(true, "Cities are sended")
 	resp["regions"] = regions
 	// Respond to the client and ...
+	utils.Respond(w, resp)
+}
+
+func CreateNewRegion(w http.ResponseWriter, r *http.Request)  {
+	region := &models.Regions{}
+
+	// Decode the request to server
+	err := json.NewDecoder(r.Body).Decode(&region)
+	if err != nil {
+		log.Println(err.Error())
+		utils.Respond(w, utils.Message(false, "Cannot decode recieved json object"))
+		return
+	}
+
+	fmt.Print(region)
+	// CreateSeller new User and UserProfile
+	err = region.Create()
+	if err != nil {
+		utils.Respond(w, utils.Message(false, "Cannot add new region object to the database"))
+		log.Fatal(err.Error())
+		return
+	}
+
+	resp := utils.Message(true, "New Region was successfully added")
+	utils.Respond(w, resp)
+}
+
+func UpdateRegion(w http.ResponseWriter, r *http.Request)  {
+	region := &models.Regions{}
+
+	// Decode the request to server
+	err := json.NewDecoder(r.Body).Decode(&region)
+	if err != nil {
+		log.Println(err.Error())
+		utils.Respond(w, utils.Message(false, "Cannot decode recieved json object"))
+		return
+	}
+
+	fmt.Print(region)
+	// CreateSeller new User and UserProfile
+	err = region.Update()
+	if err != nil {
+		utils.Respond(w, utils.Message(false, "Cannot update region object in the database"))
+		log.Fatal(err.Error())
+		return
+	}
+
+	resp := utils.Message(true, "Region was successfully updated")
+	utils.Respond(w, resp)
+}
+
+func DeleteRegionByID(w http.ResponseWriter, r *http.Request)  {
+	regionID := r.Context().Value("regionID").(string)
+
+	err := models.DeleteRegion(regionID)
+	if err != nil {
+		utils.Respond(w, utils.Message(false, "Cannot delete region object in the database"))
+		return
+	}
+
+	resp := utils.Message(true, "City was successfully removed")
 	utils.Respond(w, resp)
 }
 // CITIES
