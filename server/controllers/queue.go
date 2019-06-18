@@ -57,6 +57,5 @@ func DeleteQueueUser(w http.ResponseWriter, r *http.Request)  {
 	if err != nil {
 		utils.Respond(w, utils.Message(true, "Queue Delete error from db"))
 	}
-
 	utils.Respond(w, utils.Message(true, "Queue was successfully deleted"))
 }

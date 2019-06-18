@@ -1,0 +1,11 @@
+delimiter #
+
+create trigger notification_on_add_to_q after insert on reals.property_queue
+    for each row
+
+    begin
+        declare property_owner_id bigint;
+        select user_id from property_listing where property_listing.property_id=NEW.property_id into property_owner_id;
+        insert into notifications(user_id, text) values (property_owner_id, 'A new user was added to your property listing queue');
+    end#
+delimiter ;

@@ -34,6 +34,8 @@ func InitRouter() *chi.Mux {
 				r.Mount("/pages", routers.ListingsPages())
 				r.Mount("/queue", routers.PropertyQueueHandler())
 				r.Mount("/admin/{userId}", routers.AdminPageHandler())
+
+				r.Mount("/notifications", routers.NotificationHandler())
 		})
 
 		// Public routes

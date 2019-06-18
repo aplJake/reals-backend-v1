@@ -268,3 +268,37 @@ func AdminDeleteCtx(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
+
+func NotificationHandler() *chi.Mux {
+	router := chi.NewRouter()
+	// GET notifications in user profile
+	router.With(NotificationUserIDCtx).Get("/{userID}", controllers.GetNotifications)
+	router.With(NotificationCtx).Delete("/{notificationID}", controllers.DeleteNotification)
+	return router
+}
+
+func NotificationUserIDCtx(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		userID := chi.URLParam(r, "userID")
+		if userID == "" {
+			fmt.Print("user id is emty")
+			return
+		}
+
+		ctx := context.WithValue(r.Context(), "userID", userID)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
+
+func NotificationCtx(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		notificationID := chi.URLParam(r, "notificationID")
+		if notificationID == "" {
+			fmt.Print("notification id is emty")
+			return
+		}
+
+		ctx := context.WithValue(r.Context(), "notificationID", notificationID)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
