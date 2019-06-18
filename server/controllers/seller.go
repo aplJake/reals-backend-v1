@@ -11,38 +11,36 @@ import (
 // SellerHandler uses for creation of Seller model
 // that uses when the initial PropertyListing is added to the database
 func NewPropertyListing(w http.ResponseWriter, r *http.Request) {
-		//var listing models.PropertyListingRequest
-		listing := &models.PropertyListingRequest{}
+	//var listing models.PropertyListingRequest
+	listing := &models.PropertyListingRequest{}
 
-		fmt.Println("Request 23")
-		fmt.Println(r.Body)
+	fmt.Println("Request 23")
+	fmt.Println(r.Body)
 
+	err := json.NewDecoder(r.Body).Decode(&listing)
+	fmt.Println(listing.UserId)
+	if err != nil {
+		utils.Respond(w, utils.Message(false, "Failed to decode the listing data"))
+		panic(err.Error())
+		return
+	}
 
-		err := json.NewDecoder(r.Body).Decode(&listing)
-		fmt.Println(listing.UserId)
-		if err != nil {
-				utils.Respond(w, utils.Message(false, "Failed to decode the listing data"))
-				panic(err.Error())
-				return
-		}
+	fmt.Println("Lisiting", listing)
 
-		fmt.Println("Lisiting", listing)
-
-
-		respond := models.CreateListing(listing)
-		utils.Respond(w, respond)
+	respond := models.CreateListing(listing)
+	utils.Respond(w, respond)
 }
 
 func GetSeller(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("welcome23"))
+	w.Write([]byte("welcome23"))
 }
 
 // GET request handler to get the initial info
 // about the property on update page
-func GetPropertyListingUpdate(w http.ResponseWriter, r *http.Request)  {
+func GetPropertyListingUpdate(w http.ResponseWriter, r *http.Request) {
 	var (
 		listing *models.PropertyListingRequest
-		err error
+		err     error
 	)
 	propertyID := r.Context().Value("propertyID").(string)
 

@@ -9,7 +9,7 @@ import (
 func GetNotifications(w http.ResponseWriter, r *http.Request) {
 	var (
 		notificationArr []models.Notification
-		err      error
+		err             error
 	)
 
 	userID := r.Context().Value("userID").(string)

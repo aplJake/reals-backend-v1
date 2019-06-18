@@ -8,9 +8,9 @@ import (
 )
 
 type Country struct {
-		CountryId   uint   `json:"country_id,string"`
-		CountryName string `json:"country_name"`
-		CountryCode string `json:"country_code"`
+	CountryId   uint   `json:"country_id,string"`
+	CountryName string `json:"country_name"`
+	CountryCode string `json:"country_code"`
 }
 
 var getAllCountriesQ = `
@@ -19,48 +19,48 @@ var getAllCountriesQ = `
 
 var getCountryQ = ` SELECT * FROM country WHERE country_id=?`
 
-func DBGetCountry(countryID string) Country  {
-		var country Country
+func DBGetCountry(countryID string) Country {
+	var country Country
 
-		db = InitDB()
-		row := db.QueryRow(getCountryQ, countryID)
-		err := row.Scan(&country.CountryId, &country.CountryName, &country.CountryCode)
-		handleError(err)
+	db = InitDB()
+	row := db.QueryRow(getCountryQ, countryID)
+	err := row.Scan(&country.CountryId, &country.CountryName, &country.CountryCode)
+	handleError(err)
 
-		defer db.Close()
-		return country
+	defer db.Close()
+	return country
 }
 
 func GetAllCountries(onlyWithCities bool) ([]Country, error) {
-		db := InitDB()
-		var query string
+	db := InitDB()
+	var query string
 
-		if onlyWithCities {
-			query = `SELECT * FROM country ORDER BY country_id DESC;`
-		} else {
-			query = `SELECT DISTINCT CON.country_id,
+	if onlyWithCities {
+		query = `SELECT * FROM country ORDER BY country_id DESC;`
+	} else {
+		query = `SELECT DISTINCT CON.country_id,
 				        CON.country_name,
 				        CON.zip_code
 				FROM country CON
 				    INNER JOIN city C on CON.country_id = C.country_id;
 				`
-		}
-		res, err := db.Query(query)
+	}
+	res, err := db.Query(query)
+	handleError(err)
+
+	country := Country{}
+	countryArr := []Country{}
+	for res.Next() {
+		err = res.Scan(&country.CountryId, &country.CountryName, &country.CountryCode)
 		handleError(err)
+		countryArr = append(countryArr, country)
+	}
 
-		country := Country{}
-		countryArr := []Country{}
-		for res.Next() {
-				err = res.Scan(&country.CountryId, &country.CountryName, &country.CountryCode)
-				handleError(err)
-				countryArr = append(countryArr, country)
-		}
-
-		defer db.Close()
-		return countryArr, nil
+	defer db.Close()
+	return countryArr, nil
 }
 
-func (country *Country) Create() error  {
+func (country *Country) Create() error {
 	// Validate Country obj (it must be unique in the database
 	if ok := CountryExists(country.CountryName); ok {
 		log.Println("Country name is exists")
@@ -80,7 +80,7 @@ func (country *Country) Create() error  {
 	return nil
 }
 
-func (country *Country) Update() error  {
+func (country *Country) Update() error {
 	db := InitDB()
 
 	_, err := db.Exec("UPDATE country SET country_name=?, zip_code=? WHERE country_id=?",
@@ -94,7 +94,7 @@ func (country *Country) Update() error  {
 	return nil
 }
 
-func (city *City) Update() error  {
+func (city *City) Update() error {
 	db := InitDB()
 
 	_, err := db.Exec("UPDATE city SET country_id=?, city_name=? WHERE city_id=?",
@@ -129,19 +129,21 @@ func CountryExists(countryName string) bool {
 }
 
 func hadleError(err error) {
-		if err != nil {
-				panic(err.Error())
-		}
+	if err != nil {
+		panic(err.Error())
+	}
 }
 
 type City struct {
-		CityId    uint   `json:"city_id,string"`
-		CityName  string `json:"city_name"`
-		CountryId uint   `json:"country_id,string"`
+	CityId    uint   `json:"city_id,string"`
+	CityName  string `json:"city_name"`
+	CountryId uint   `json:"country_id,string"`
 }
+
 var getAllCitiesQ = `
 	SELECT * FROM city ORDER BY city_id DESC;
 `
+
 func GetAllCities() ([]City, error) {
 	db := InitDB()
 
@@ -159,27 +161,29 @@ func GetAllCities() ([]City, error) {
 	defer db.Close()
 	return cityArr, nil
 }
+
 var findCitiesByCountryQ = `
 	SELECT * FROM city WHERE country_id=?;
 `
-func (c *Country) FindCitiesByCountry() ([]City, error)  {
-		var db *sql.DB
 
-		db = InitDB()
+func (c *Country) FindCitiesByCountry() ([]City, error) {
+	var db *sql.DB
 
-		res, err := db.Query(findCitiesByCountryQ, c.CountryId)
+	db = InitDB()
+
+	res, err := db.Query(findCitiesByCountryQ, c.CountryId)
+	handleError(err)
+
+	city := City{}
+	citiesArr := []City{}
+	for res.Next() {
+		err = res.Scan(&city.CityId, &city.CountryId, &city.CityName)
 		handleError(err)
+		citiesArr = append(citiesArr, city)
+	}
 
-		city := City{}
-		citiesArr := []City{}
-		for res.Next() {
-				err = res.Scan(&city.CityId, &city.CountryId, &city.CityName)
-				handleError(err)
-				citiesArr = append(citiesArr, city)
-		}
-
-		defer db.Close()
-		return citiesArr, nil
+	defer db.Close()
+	return citiesArr, nil
 }
 
 func (city *City) Create() error {
@@ -202,7 +206,7 @@ func (city *City) Create() error {
 	return nil
 }
 
-func CityExists(cityName string) bool  {
+func CityExists(cityName string) bool {
 	db := InitDB()
 	sqlStmt := "SELECT city_name FROM city WHERE city_name=?"
 	err := db.QueryRow(sqlStmt, cityName).Scan(&cityName)
@@ -223,20 +227,20 @@ func CityExists(cityName string) bool  {
 }
 
 type Regions struct {
-	RegionID  uint   `json:"region_id,string"`
-	RegionName   string `json:"region_name"`
-	CityId       uint   `json:"city_id,string"`
+	RegionID   uint   `json:"region_id,string"`
+	RegionName string `json:"region_name"`
+	CityId     uint   `json:"city_id,string"`
 }
 
 // Router JSON REQUEST MODEL
 type AddressesRequest struct {
-	RegionID uint `json:"region_id,string"`
-	CityID		uint	`json:"city_id,string"`
-	RegionName   string `json:"region_name"`
-	CountryID	uint	`json:"country_id,string"`
+	RegionID   uint   `json:"region_id,string"`
+	CityID     uint   `json:"city_id,string"`
+	RegionName string `json:"region_name"`
+	CountryID  uint   `json:"country_id,string"`
 }
 
-func (region *Regions) Create() error  {
+func (region *Regions) Create() error {
 	// Validate Country obj (it must be unique in the database
 	if ok := RegionExists(region.RegionName); ok {
 		log.Println("Region name already exists")
@@ -270,7 +274,7 @@ func (region *Regions) Update() error {
 	return nil
 }
 
-func DeleteRegion(id string) error  {
+func DeleteRegion(id string) error {
 	db := InitDB()
 	_, err := db.Exec("DELETE FROM regions where region_id=?;", id)
 	if err != nil {
@@ -281,7 +285,7 @@ func DeleteRegion(id string) error  {
 	return nil
 }
 
-func RegionExists(cityName string) bool  {
+func RegionExists(cityName string) bool {
 	db := InitDB()
 	sqlStmt := "SELECT city_name FROM city WHERE city_name=?"
 	err := db.QueryRow(sqlStmt, cityName).Scan(&cityName)
@@ -301,7 +305,7 @@ func RegionExists(cityName string) bool  {
 	return true
 }
 
-func GetAllRegions() ([]Regions, error)  {
+func GetAllRegions() ([]Regions, error) {
 	db := InitDB()
 
 	res, err := db.Query("SELECT * FROM regions")

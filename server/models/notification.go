@@ -7,13 +7,13 @@ import (
 )
 
 type Notification struct {
-	NotificationID uint `json:"notification_id,string"`
-	UserID uint `json:"user_id,string"`
-	Text string `json:"text"`
-	CreatedAt time.Time `json:"created_at"`
+	NotificationID uint      `json:"notification_id,string"`
+	UserID         uint      `json:"user_id,string"`
+	Text           string    `json:"text"`
+	CreatedAt      time.Time `json:"created_at"`
 }
 
-func GetNotifications(userID string) ([]Notification, error)  {
+func GetNotifications(userID string) ([]Notification, error) {
 	db := InitDB()
 
 	res, err := db.Query("SELECT * FROM notifications WHERE user_id=? ORDER BY user_id DESC", userID)

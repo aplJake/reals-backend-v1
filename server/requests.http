@@ -13,4 +13,5 @@ Content-Type: application/json
 ###
 
 GET http://localhost:2308/api/countries/3/cities
+
 ###

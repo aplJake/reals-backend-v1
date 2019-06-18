@@ -24,7 +24,7 @@ type Property struct {
 // LisitngCurrency field holds by default such vars: usd, hrv, eur
 type PropertyListing struct {
 	PropertyId         uint      `json:"property_id"`
-	RegionID        uint      `json:"region_id"`
+	RegionID           uint      `json:"region_id"`
 	UserID             uint      `json:"user_id"`
 	ListingDescription string    `json:"listing_description"`
 	ListingPrice       int       `json:"listing_price,string"`
@@ -40,10 +40,6 @@ func CreateListing(listing *PropertyListingRequest) map[string]interface{} {
 	var db *sql.DB
 
 	db = InitDB()
-	//seller := &Seller{}
-	//seller.ID = listing.UserId
-	fmt.Println("Listing id", listing.UserId)
-	//fmt.Println("Seller id", seller.ID)
 
 	exists, err := SellerIsExists(listing.UserId)
 	if err != nil {
@@ -123,9 +119,6 @@ func CreateListing(listing *PropertyListingRequest) map[string]interface{} {
 	}
 	fmt.Println("Index 23 ", id)
 
-	//var _  = `INSERT INTO property_listing(
-	//                     property_id, user_id, listing_description,
-	//                     listing_price, listing_currency, listing_is_active) VALUES(?,?,?,?,?,?);`
 	var insertNewListingQ = `
 				INSERT INTO property_listing(
 					property_id, 
@@ -159,18 +152,9 @@ func CreateListing(listing *PropertyListingRequest) map[string]interface{} {
 	log.Println("Done added listing")
 
 	return utils.Message(true, "Property listing was successfully added")
-
-	// CreateSeller Property model
-	// Set the data to the database
-	// CreateSeller PropertyListing
-	// Set data to the database
-
-	// Validate the input data where the fields are strict necessary
-	// Handle errors
-	// Return response
 }
 
-func (l *PropertyListingRequest) UpdateListing() error  {
+func (l *PropertyListingRequest) UpdateListing() error {
 	db := InitDB()
 
 	tx, err := db.Begin()
@@ -197,21 +181,6 @@ func (l *PropertyListingRequest) UpdateListing() error  {
 		}
 		return errors.New("Property update error")
 	}
-
-	//var updatePropertyStreetQ = `
-	//	UPDATE regions
-	//	SET city_id=?,
-	//	    region_name=?
-	//	WHERE region_id=?
-	//`
-	//_, err = tx.Exec(updatePropertyStreetQ, l.CityID, l.RegionName,
-	//	l.RegionID)
-	//if err != nil {
-	//	if err := tx.Rollback(); err != nil {
-	//		return errors.New("Addresses update transaction error")
-	//	}
-	//	return errors.New("Addresses update error")
-	//}
 
 	var updatePropertyListing = `
 		UPDATE property_listing
@@ -267,15 +236,13 @@ var getAllListings = `
 `
 
 func GetListingsList() ([]PropertyListing, error) {
-	fmt.Println("Getting all listings");
-
+	fmt.Println("Getting all listings")
 	db := InitDB()
 
 	res, err := db.Query(getAllListings)
 	handleError(err)
 
 	defer db.Close()
-
 
 	var listing PropertyListing
 	var listingsArr []PropertyListing
@@ -324,7 +291,7 @@ type PropertyListingRequest struct {
 	UserId              uint   `json:"user_id"`
 	ConstructionType    string `json:"construction_type"`
 	Area                int    `json:"area,string"`
-	RoomNumber          string    `json:"room_number"`
+	RoomNumber          string `json:"room_number"`
 	BathroomNumber      int    `json:"bathroom_number,string"`
 	MaxFloorNumber      string `json:"max_floor_number"`
 	PropertyFloorNumber string `json:"property_floor_number"`
@@ -334,16 +301,16 @@ type PropertyListingRequest struct {
 	ListingCurrency    string `json:"listing_currency"`
 	ListingIsActive    bool   `json:"listing_is_active,string"`
 	// Address
-	CityID		uint	`json:"city_id,string"`
-	RegionName   string `json:"region_name"`
-	CountryID	uint	`json:"country_id,string"`
-	RegionID	uint	`json:"region_id,string"`
+	CityID     uint   `json:"city_id,string"`
+	RegionName string `json:"region_name"`
+	CountryID  uint   `json:"country_id,string"`
+	RegionID   uint   `json:"region_id,string"`
 }
 
 type PropertyPageData struct {
 	Listing  PropertyListing `json:"property_listing"`
 	Property Property        `json:"property"`
-	Regions  Regions       `json:"regions"`
+	Regions  Regions         `json:"regions"`
 }
 
 // Transaction utils
@@ -416,7 +383,7 @@ type PropertyProfileData struct {
 }
 
 type PropertyQueueData struct {
-	UserID 		uint `json:"user_id"`
+	UserID    uint      `json:"user_id"`
 	UserName  string    `json:"user_name"`
 	QueueTime time.Time `json:"queue_time"`
 }
@@ -496,7 +463,8 @@ var getListingDataForUpdateQ = `
 			    ON A.city_id = C.city_id
 	WHERE P.property_id=?;
 `
-func GetPropertyListing(propertyID string) (*PropertyListingRequest, error)  {
+
+func GetPropertyListing(propertyID string) (*PropertyListingRequest, error) {
 	fmt.Println("Property id 1", propertyID)
 	p := &PropertyListingRequest{}
 	db := InitDB()
@@ -515,12 +483,12 @@ func GetPropertyListing(propertyID string) (*PropertyListingRequest, error)  {
 	return p, nil
 }
 
-func RemovePropertyListing(propertyID string) error  {
+func RemovePropertyListing(propertyID string) error {
 	db := InitDB()
 
 	tx, err := db.Begin()
 	if err != nil {
-		 return errors.New("DB Transaction begin error")
+		return errors.New("DB Transaction begin error")
 	}
 
 	_, err = tx.Exec("DELETE FROM property_listing WHERE property_id=?;", propertyID)

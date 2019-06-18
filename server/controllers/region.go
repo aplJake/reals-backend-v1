@@ -11,19 +11,19 @@ import (
 
 // Get all Countries
 func GetCountries(w http.ResponseWriter, r *http.Request) {
-		var countries []models.Country
-		var err error
+	var countries []models.Country
+	var err error
 
-		// Request all the data from the database
-		countries, err = models.GetAllCountries(true)
-		if err != nil {
-				panic(err.Error())
-		}
+	// Request all the data from the database
+	countries, err = models.GetAllCountries(true)
+	if err != nil {
+		panic(err.Error())
+	}
 
-		resp := utils.Message(true, "Coutries are sended")
-		resp["countries"] = countries
-		// Respond to the client and ...
-		utils.Respond(w, resp)
+	resp := utils.Message(true, "Coutries are sended")
+	resp["countries"] = countries
+	// Respond to the client and ...
+	utils.Respond(w, resp)
 }
 
 // GetCountriesWithCities method GETs only countries that contains at least
@@ -68,8 +68,9 @@ func AddNewCountry(w http.ResponseWriter, r *http.Request) {
 	resp := utils.Message(true, "New Country was successfully added")
 	utils.Respond(w, resp)
 }
+
 // Edit Country
-func UpdateCountry(w http.ResponseWriter, r *http.Request)  {
+func UpdateCountry(w http.ResponseWriter, r *http.Request) {
 	country := &models.Country{}
 
 	// Decode the request to server
@@ -94,7 +95,7 @@ func UpdateCountry(w http.ResponseWriter, r *http.Request)  {
 }
 
 // Remove Country
-func DeleteCountry(w http.ResponseWriter, r *http.Request)  {
+func DeleteCountry(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Dele request")
 	countryID := r.Context().Value("countryToDeleteID").(string)
 
@@ -114,7 +115,7 @@ func DeleteCountry(w http.ResponseWriter, r *http.Request)  {
 	utils.Respond(w, resp)
 }
 
-func DeleteCity(w http.ResponseWriter, r *http.Request)  {
+func DeleteCity(w http.ResponseWriter, r *http.Request) {
 	cityID := r.Context().Value("cityToDeleteID").(string)
 
 	fmt.Println(cityID)
@@ -135,7 +136,7 @@ func DeleteCity(w http.ResponseWriter, r *http.Request)  {
 // REGIONS
 
 // Get all Regions
-func GetRegionsList(w http.ResponseWriter, r *http.Request)  {
+func GetRegionsList(w http.ResponseWriter, r *http.Request) {
 	var regions []models.Regions
 	var err error
 
@@ -151,7 +152,7 @@ func GetRegionsList(w http.ResponseWriter, r *http.Request)  {
 	utils.Respond(w, resp)
 }
 
-func CreateNewRegion(w http.ResponseWriter, r *http.Request)  {
+func CreateNewRegion(w http.ResponseWriter, r *http.Request) {
 	region := &models.Regions{}
 
 	// Decode the request to server
@@ -175,7 +176,7 @@ func CreateNewRegion(w http.ResponseWriter, r *http.Request)  {
 	utils.Respond(w, resp)
 }
 
-func UpdateRegion(w http.ResponseWriter, r *http.Request)  {
+func UpdateRegion(w http.ResponseWriter, r *http.Request) {
 	region := &models.Regions{}
 
 	// Decode the request to server
@@ -199,7 +200,7 @@ func UpdateRegion(w http.ResponseWriter, r *http.Request)  {
 	utils.Respond(w, resp)
 }
 
-func DeleteRegionByID(w http.ResponseWriter, r *http.Request)  {
+func DeleteRegionByID(w http.ResponseWriter, r *http.Request) {
 	regionID := r.Context().Value("regionID").(string)
 
 	err := models.DeleteRegion(regionID)
@@ -211,6 +212,7 @@ func DeleteRegionByID(w http.ResponseWriter, r *http.Request)  {
 	resp := utils.Message(true, "City was successfully removed")
 	utils.Respond(w, resp)
 }
+
 // CITIES
 
 // Get all Cities
@@ -229,24 +231,24 @@ func GetCitiesList(w http.ResponseWriter, r *http.Request) {
 	// Respond to the client and ...
 	utils.Respond(w, resp)
 }
+
 // Get City By Country
 func GetCitiesByCountry(w http.ResponseWriter, r *http.Request) {
-		var cities []models.City
-		var err error
+	var cities []models.City
+	var err error
 
-		country := r.Context().Value("coutryID").(models.Country)
+	country := r.Context().Value("coutryID").(models.Country)
 
+	// Request all the data from the database
+	cities, err = country.FindCitiesByCountry()
+	if err != nil {
+		panic(err.Error())
+	}
 
-		// Request all the data from the database
-		cities, err = country.FindCitiesByCountry()
-		if err != nil {
-				panic(err.Error())
-		}
-
-		resp := utils.Message(true, "Cities are sended")
-		resp["cities"] = cities
-		// Respond to the client and ...
-		utils.Respond(w, resp)
+	resp := utils.Message(true, "Cities are sended")
+	resp["cities"] = cities
+	// Respond to the client and ...
+	utils.Respond(w, resp)
 }
 
 // AddNewCity POST request handler
@@ -275,7 +277,7 @@ func AddNewCity(w http.ResponseWriter, r *http.Request) {
 }
 
 // UpdateCity PUT handler that updates infor about city object
-func UpdateCity(w http.ResponseWriter, r *http.Request)  {
+func UpdateCity(w http.ResponseWriter, r *http.Request) {
 	city := &models.City{}
 
 	// Decode the request to server
@@ -298,4 +300,3 @@ func UpdateCity(w http.ResponseWriter, r *http.Request)  {
 	resp := utils.Message(true, "Country was successfully updated")
 	utils.Respond(w, resp)
 }
-

@@ -5,13 +5,16 @@
 
 delimiter #
 
-create trigger auto_set_date_interval_prop_q before insert on reals.property_queue
+create trigger auto_set_date_interval_prop_q
+    before insert
+    on reals.property_queue
     for each row
 
-    begin
-        set
-            NEW.queue_time = DATE_ADD(NOW(), INTERVAL 2 HOUR );
-    end #
+begin
+    set
+        NEW.queue_time = DATE_ADD(NOW(), INTERVAL 2 HOUR);
+end #
 delimiter ;
 
-insert into property_queue(user_id, property_id) VALUES (1, 1);
+insert into property_queue(user_id, property_id)
+VALUES (1, 1);

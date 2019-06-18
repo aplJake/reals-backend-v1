@@ -42,7 +42,7 @@ func AddUserToQueue(w http.ResponseWriter, r *http.Request) {
 	utils.Respond(w, resp)
 }
 
-func DeleteQueueUser(w http.ResponseWriter, r *http.Request)  {
+func DeleteQueueUser(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("DELETE OPERATION ")
 	var queue models.Queue
 

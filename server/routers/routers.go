@@ -220,7 +220,7 @@ func CityRegionIDCtx(next http.Handler) http.Handler {
 	})
 }
 
-func PropertyQueueHandler() *chi.Mux  {
+func PropertyQueueHandler() *chi.Mux {
 	router := chi.NewRouter()
 	router.With(QueuePropertyCtx).Delete("/{userID}/property/{propertyID}", controllers.DeleteQueueUser)
 	router.Post("/", controllers.AddUserToQueue)
